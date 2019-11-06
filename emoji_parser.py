@@ -15,4 +15,4 @@ emoji_dict = {
 
 
 def grid_to_emoji(grid):
-    print("\n".join([" ".join([f"||:{emoji_dict[c]}:||" for c in row]) for row in grid]))
+    return "\n".join([" ".join([f"||:{emoji_dict[c]}:||" for c in row]) for row in grid])
