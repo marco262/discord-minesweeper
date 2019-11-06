@@ -28,6 +28,8 @@ def add_bomb(grid, x, y):
 
 
 def increment_space(grid, x, y):
+    if x < 0 or y < 0:
+        return
     try:
         if grid[y][x] == "B":
             return
