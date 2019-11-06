@@ -1,5 +1,7 @@
 from random import randint
 
+from emoji_parser import grid_to_emoji
+
 WIDTH = 10
 HEIGHT = 10
 BOMBS = 10
@@ -42,14 +44,10 @@ def print_grid(grid):
     print("\n".join([" ".join([str(c) for c in row]) for row in grid]))
 
 
-def build_game(width=None, height=None, bombs=None):
-    if width is None:
-        width = WIDTH
-    if height is None:
-        height = HEIGHT
+def build_game(width, height, bombs):
     grid = empty_grid(width, height)
 
-    bomb_count = BOMBS if bombs is None else bombs
+    bomb_count = bombs
     retry_count = 0
     while bomb_count > 0:
         if add_bomb(grid, randint(0, width - 1), randint(0, height - 1)):
@@ -63,5 +61,17 @@ def build_game(width=None, height=None, bombs=None):
     return grid
 
 
+def new_game(width=None, height=None, bombs=None):
+    if width is None:
+        width = WIDTH
+    if height is None:
+        height = HEIGHT
+    if bombs is None:
+        bombs = BOMBS
+
+    grid = build_game(width, height, bombs)
+    return f"{width}x{height} with {bombs} bombs\n" + grid_to_emoji(grid)
+
+
 if __name__ == "__main__":
-    build_game()
+    new_game()

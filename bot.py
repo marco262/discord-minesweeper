@@ -3,8 +3,7 @@ from json import loads
 import discord
 from discord.ext.commands import Bot
 
-from emoji_parser import grid_to_emoji
-from minesweeper import build_game
+from minesweeper import new_game
 
 VERSION = (0, 0, 1)
 
@@ -26,10 +25,14 @@ async def version(context):
     await context.send("Version " + ".".join([str(c) for c in VERSION]))
 
 
-@bot.command(name='game')
-async def game(context):
-    grid = build_game()
-    await context.send(grid_to_emoji(grid))
+@bot.command(name='game', help="[width] [height] [# of bombs] [public]")
+async def game(context, width: int=None, height: int=None, bombs: int=10, public: str=""):
+    send_to_channel = (public == "public")
+    output = new_game(width, height, bombs)
+    if send_to_channel:
+        await context.send(output)
+    else:
+        await context.author.send(output)
 
 
 if __name__ == "__main__":
