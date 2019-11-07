@@ -10,7 +10,7 @@ VERSION = (0, 0, 1)
 with open("credentials.json") as f:
     json = loads(f.read())
     TOKEN = json["token"]
-    MASTER_ID = int(json["master_id"])
+    MASTER_ID = json["master_id"]
 
 bot = Bot(command_prefix="~")
 
