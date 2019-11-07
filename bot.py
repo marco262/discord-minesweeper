@@ -3,6 +3,7 @@ from json import loads
 import discord
 from discord.ext.commands import Bot
 
+from list_functions import load_list_functions
 from minesweeper import new_game
 
 VERSION = (0, 0, 1)
@@ -13,6 +14,8 @@ with open("credentials.json") as f:
     MASTER_ID = json["master_id"]
 
 bot = Bot(command_prefix="~")
+
+load_list_functions(bot)
 
 
 @bot.event
