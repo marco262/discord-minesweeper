@@ -1,10 +1,16 @@
+import os
 import sqlite3
 
-db = sqlite3.connect("list-keeper.db")
+os.makedirs("../../database_files/", exist_ok=True)
+db = sqlite3.connect("../../database_files/list-keeper.db")
 cur = db.cursor()
 
 sql = """
 DROP TABLE IF EXISTS users;
+"""
+print(cur.execute(sql).fetchall())
+
+sql = """
 DROP TABLE IF EXISTS tasks;
 """
 print(cur.execute(sql).fetchall())
@@ -29,4 +35,5 @@ CREATE TABLE IF NOT EXISTS tasks (
 """
 print(cur.execute(sql).fetchall())
 
-# print(cur.execute("select sql from sqlite_master where type = 'table' and name = 'users';").fetchone()[0])
+print(cur.execute("select sql from sqlite_master where type = 'table' and name = 'users';").fetchone()[0])
+print(cur.execute("select sql from sqlite_master where type = 'table' and name = 'tasks';").fetchone()[0])

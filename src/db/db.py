@@ -4,7 +4,7 @@ import sys
 
 class Db:
 
-    def __init__(self, filename="list-keeper.db"):
+    def __init__(self, filename="database_files/list-keeper.db"):
         self.db = sqlite3.connect(filename)
         self.cur = self.db.cursor()
 
