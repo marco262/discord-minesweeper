@@ -26,7 +26,6 @@ print(cur.execute(sql).fetchall())
 
 sql = """
 CREATE TABLE IF NOT EXISTS tasks (
-    id INTEGER PRIMARY KEY AUTOINCREMENT, 
     name TEXT NOT NULL, 
     owner_id TEXT NOT NULL,
     creation_ts TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

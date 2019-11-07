@@ -35,3 +35,16 @@ class Db:
         sql = "SELECT id FROM owners WHERE name=?"
         return self.cur.execute(sql, [name]).fetchone()[0]
 
+    def add_task(self, task_name, owner_id):
+        sql = """
+        INSERT INTO tasks (name, owner_id) VALUES (?, ?);
+        """
+        self.cur.execute(sql, [task_name, owner_id])
+        return self.cur.lastrowid
+
+    def get_task_ids_by_name(self, task_name):
+        sql = """
+        SELECT rowid FROM tasks
+        WHERE name LIKE ?;
+        """
+        return self.cur.execute(sql, ['%' + task_name + '%']).fetchall()

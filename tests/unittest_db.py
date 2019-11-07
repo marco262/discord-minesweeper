@@ -19,8 +19,13 @@ class TestDatabase(unittest.TestCase):
         self.db.db.close()
 
     def test_add_user(self):
-        self.db.add_user(1234567, "Marco262")
-        self.assertEqual(1234567, self.db.get_user_id("Marco262"))
+        self.db.add_owner(1234567, "Marco262")
+        self.assertEqual(1234567, self.db.get_owner_id("Marco262"))
+
+    def test_add_task(self):
+        rowid = self.db.add_task("Spoon Spain", 1234567)
+        retrieved_rowid = self.db.get_task_ids_by_name("Spain")
+        self.assertEqual(rowid, retrieved_rowid)
 
 
 if __name__ == "__main__":
