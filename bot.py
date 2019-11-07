@@ -12,24 +12,13 @@ with open("credentials.json") as f:
     TOKEN = json["token"]
     GUILD = json["guild"]
 
-bot = Bot(command_prefix="!")
+bot = Bot(command_prefix="~")
 
 
 @bot.event
 async def on_ready():
-    await bot.change_presence(activity=discord.Game("Mention me for help"))
+    await bot.change_presence(activity=discord.Game("~help"))
     print(f"{bot.user.name} has connected to Discord!")
-
-
-@bot.event
-async def on_message(message):
-    if message.content == f"<@{bot.user.id}>":
-        output = "```\n"
-        for c in bot.commands:
-            if c.name != "help":
-                output += f"\t{c.name:<10}\t{c.help}\n"
-        output += "```"
-        await message.author.send(output)
 
 
 @bot.command(name='version')
