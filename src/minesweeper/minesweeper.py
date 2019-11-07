@@ -1,6 +1,6 @@
 from random import randint
 
-from emoji_parser import grid_to_emoji
+from src.minesweeper.emoji_parser import grid_to_emoji
 
 WIDTH = 10
 HEIGHT = 10

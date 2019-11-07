@@ -1,6 +1,6 @@
 from discord.ext.commands import Bot
 
-from db import Db
+from src.db.db import Db
 
 
 def load_list_functions(bot: Bot):

@@ -3,8 +3,8 @@ from json import loads
 import discord
 from discord.ext.commands import Bot
 
-from list_functions import load_list_functions
-from minesweeper import new_game
+from src.list_bot.list_functions import load_list_functions
+from src.minesweeper.minesweeper import new_game
 
 VERSION = (0, 0, 1)
 
