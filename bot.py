@@ -10,7 +10,7 @@ VERSION = (0, 0, 1)
 with open("credentials.json") as f:
     json = loads(f.read())
     TOKEN = json["token"]
-    GUILD = json["guild"]
+    MASTER_ID = int(json["master_id"])
 
 bot = Bot(command_prefix="~")
 
@@ -34,6 +34,14 @@ async def game(context, width: int=None, height: int=None, bombs: int=10, public
         await context.send(output)
     else:
         await context.author.send(output)
+
+
+@bot.command(name='logout')
+async def version(context):
+    if context.author.id == MASTER_ID:
+        print("Logging out...")
+        await bot.change_presence(status=discord.Status.offline)
+        await bot.logout()
 
 
 if __name__ == "__main__":
