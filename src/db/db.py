@@ -4,9 +4,10 @@ import sys
 
 class Db:
 
-    def __init__(self, filename="database_files/list-keeper.db"):
+    def __init__(self, filename="database_files/list-keeper.db", auto_commit=True):
         self.db = sqlite3.connect(filename)
         self.cur = self.db.cursor()
+        self.auto_commit = True
 
     def __enter__(self):
         return self
@@ -17,7 +18,7 @@ class Db:
                 if exc_type:
                     self.db.rollback()
                     print(exc_type, exc_val, exc_tb, file=sys.stderr)
-                else:
+                elif self.auto_commit:
                     self.db.commit()
             finally:
                 self.db.close()
