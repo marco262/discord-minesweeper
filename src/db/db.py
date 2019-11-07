@@ -42,9 +42,11 @@ class Db:
         self.cur.execute(sql, [task_name, owner_id])
         return self.cur.lastrowid
 
-    def get_task_ids_by_name(self, task_name):
+    def get_task_ids_by_name(self, task_name, owner_id):
         sql = """
         SELECT rowid FROM tasks
-        WHERE name LIKE ?;
+        WHERE 
+          name LIKE ? AND
+          owner_id = ?;
         """
-        return self.cur.execute(sql, ['%' + task_name + '%']).fetchall()
+        return self.cur.execute(sql, ['%' + task_name + '%', owner_id]).fetchall()
