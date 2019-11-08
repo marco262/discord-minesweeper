@@ -1,5 +1,7 @@
 import sqlite3
 import sys
+from json import dumps
+from typing import Iterable
 
 
 class Db:
@@ -42,6 +44,12 @@ class Db:
         self.cur.execute(sql, [task_name, owner_id])
         return self.cur.lastrowid
 
+    def rename_task(self, task_id, task_name):
+        sql = """
+        UPDATE tasks SET name = ? WHERE rowid = ?;
+        """
+        self.cur.execute(sql, [task_name, task_id])
+
     def get_task_ids_by_name(self, task_name, owner_id):
         sql = """
         SELECT rowid FROM tasks
@@ -52,20 +60,44 @@ class Db:
         response = self.cur.execute(sql, ['%' + task_name + '%', owner_id]).fetchall()
         return [x[0] for x in response]
 
-    def start_task(self, task_id, owner_id):
+    def get_task_name(self, task_id):
+        sql = """
+        SELECT name FROM tasks
+        WHERE rowid=?
+        """
+        return self.cur.execute(sql, [task_id]).fetchone()[0]
+
+    def get_task_names(self, task_ids: Iterable):
+        """
+        :param task_ids: List of ids
+        :return: List of str
+        """
+        param_placeholders = ",".join("?"*len(task_ids))
+        sql = f"SELECT name FROM tasks WHERE rowid IN ({param_placeholders})"
+        response = self.cur.execute(sql, task_ids).fetchall()
+        return [x[0] for x in response]
+
+    def get_tasks(self, task_ids: Iterable):
+        """
+        :param task_ids: List of ids
+        :return: List of lists
+        """
+        param_placeholders = ",".join("?"*len(task_ids))
+        sql = f"SELECT * FROM tasks WHERE rowid IN ({param_placeholders})"
+        return self.cur.execute(sql, task_ids).fetchall()
+
+    def start_task(self, task_id):
         sql = """
         UPDATE tasks
         SET started_ts = CURRENT_TIMESTAMP
         WHERE 
-          rowid = ? AND
-          owner_id = ?;
+          rowid = ?;
         """
-        self.cur.execute(sql, [task_id, owner_id])
+        self.cur.execute(sql, [task_id])
 
-    def get_task_start_time(self, task_id, owner_id):
+    def get_task_start_time(self, task_id):
         """
         :param task_id:
-        :param owner_id:
         :return: Timestamp of format %Y-%m-%d %H:%M:%S
         """
         sql = """
@@ -73,25 +105,22 @@ class Db:
           started_ts
         FROM tasks
         WHERE
-          rowid = ? AND
-          owner_id = ?;
+          rowid = ?;
         """
-        return self.cur.execute(sql, [task_id, owner_id]).fetchone()[0]
+        return self.cur.execute(sql, [task_id]).fetchone()[0]
 
-    def complete_task(self, task_id, owner_id):
+    def complete_task(self, task_id):
         sql = """
         UPDATE tasks
         SET completed_ts = CURRENT_TIMESTAMP
         WHERE 
-          rowid = ? AND
-          owner_id = ?;
+          rowid = ?;
         """
-        self.cur.execute(sql, [task_id, owner_id])
+        self.cur.execute(sql, [task_id])
 
-    def get_task_complete_time(self, task_id, owner_id):
+    def get_task_complete_time(self, task_id):
         """
         :param task_id:
-        :param owner_id:
         :return: Timestamp of format %Y-%m-%d %H:%M:%S
         """
         sql = """
@@ -99,7 +128,6 @@ class Db:
           completed_ts
         FROM tasks
         WHERE
-          rowid = ? AND
-          owner_id = ?;
+          rowid = ?;
         """
-        return self.cur.execute(sql, [task_id, owner_id]).fetchone()[0]
+        return self.cur.execute(sql, [task_id]).fetchone()[0]
