@@ -18,6 +18,18 @@ def ts_to_epoch(ts):
     return ts_to_dt(ts).timestamp()
 
 
+def dt_to_ts(dt: datetime):
+    return dt.strftime(TIME_FORMAT)
+
+
+def now_epoch():
+    return datetime.utcnow()
+
+
+def now_ts():
+    return dt_to_ts(now_epoch())
+
+
 class TestDatabase(unittest.TestCase):
 
     @classmethod
@@ -79,7 +91,7 @@ class TestDatabase(unittest.TestCase):
     def test_start_task(self):
         rowid = self.db.add_task("Spoon Spain", OWNER_ID)
         self.db.start_task(rowid)
-        current_time = datetime.utcnow()
+        current_time = now_epoch()
         started_time = ts_to_dt(self.db.get_task_start_time(rowid))
         # Accept any epoch that's within one second of the current epoch.
         delta = (current_time - started_time).total_seconds()
@@ -88,7 +100,7 @@ class TestDatabase(unittest.TestCase):
     def test_complete_task(self):
         rowid = self.db.add_task("Spoon Spain", OWNER_ID)
         self.db.complete_task(rowid)
-        current_time = datetime.utcnow()
+        current_time = now_epoch()
         completed_time = ts_to_dt(self.db.get_task_complete_time(rowid))
         # Accept any epoch that's within one second of the current epoch.
         delta = (current_time - completed_time).total_seconds()
@@ -101,13 +113,28 @@ class TestDatabase(unittest.TestCase):
         self.db.start_task(rowid1)
         self.db.complete_task(rowid1)
         self.db.start_task(rowid2)
-        current_time = datetime.utcnow().strftime(TIME_FORMAT)
+        current_time = now_ts()
         expected_result = [
-            ('Spoon Spain', '1234567', current_time, current_time, current_time),
-            ('Spank Spain', '1234567', current_time, current_time, None),
-            ('Splain Spain', '1234567', current_time, None, None)
+            ('Spoon Spain', OWNER_ID, current_time, current_time, current_time),
+            ('Spank Spain', OWNER_ID, current_time, current_time, None),
+            ('Splain Spain', OWNER_ID, current_time, None, None)
         ]
         self.assertEqual(expected_result, self.db.get_tasks([rowid1, rowid2, rowid3]))
+
+    def test_add_new_list(self):
+        self.db.new_list([1, 2, 3], OWNER_ID)
+        current_time = now_ts()
+        retrieved_list = self.db.get_list(OWNER_ID)
+        self.assertEqual([[1, 2, 3], OWNER_ID, current_time], retrieved_list)
+
+    def test_add_and_replace_new_list(self):
+        self.db.new_list([1, 2, 3], OWNER_ID)
+        self.db.new_list([4, 5, 6], OWNER_ID)
+        current_time = now_ts()
+        retrieved_list = self.db.get_list(OWNER_ID)
+        self.assertEqual([[4, 5, 6], OWNER_ID, current_time], retrieved_list)
+
+
 
 
 if __name__ == "__main__":

@@ -32,7 +32,7 @@ print(cur.execute(sql).fetchall())
 sql = """
 CREATE TABLE IF NOT EXISTS tasks (
     name TEXT NOT NULL, 
-    owner_id TEXT NOT NULL,
+    owner_id INTEGER NOT NULL,
     created_ts TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     started_ts TIMESTAMP DEFAULT NULL,
     completed_ts TIMESTAMP DEFAULT NULL
@@ -43,7 +43,7 @@ print(cur.execute(sql).fetchall())
 sql = """
 CREATE TABLE IF NOT EXISTS lists (
     items TEXT NOT NULL,
-    owner_id TEXT NOT NULL UNIQUE,
+    owner_id INTEGER NOT NULL UNIQUE,
     created_ts TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 """

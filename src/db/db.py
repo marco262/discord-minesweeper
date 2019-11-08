@@ -1,6 +1,6 @@
 import sqlite3
 import sys
-from json import dumps
+from json import dumps, loads
 from typing import Iterable
 
 
@@ -131,3 +131,35 @@ class Db:
           rowid = ?;
         """
         return self.cur.execute(sql, [task_id]).fetchone()[0]
+
+    def new_list(self, list_items, owner_id):
+        """
+        :param owner_id:
+        :param list_items: List of ints
+        :return:
+        """
+        sql = """
+        INSERT INTO lists (items, owner_id) VALUES (?, ?);
+        """
+        json_list = dumps(list_items)
+        try:
+            self.cur.execute(sql, [json_list, owner_id])
+            return
+        except sqlite3.IntegrityError:
+            pass
+
+        sql = """
+        UPDATE lists 
+        SET
+          items = ?,
+          created_ts = CURRENT_TIMESTAMP
+        WHERE
+          owner_id = ? 
+        """
+        self.cur.execute(sql, [json_list, owner_id])
+
+    def get_list(self, owner_id):
+        sql = "SELECT * FROM lists WHERE owner_id = ?"
+        response = list(self.cur.execute(sql, [owner_id]).fetchone())
+        response[0] = loads(response[0])
+        return response
