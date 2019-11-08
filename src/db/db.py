@@ -9,7 +9,7 @@ class Db:
     def __init__(self, filename="database_files/list-keeper.db", auto_commit=True):
         self.db = sqlite3.connect(filename)
         self.cur = self.db.cursor()
-        self.auto_commit = True
+        self.auto_commit = auto_commit
 
     def __enter__(self):
         return self
@@ -25,13 +25,16 @@ class Db:
             finally:
                 self.db.close()
 
+    def print_tables(self):
+        print(self.cur.execute("SELECT * FROM owners").fetchall())
+        print('')
+        print(self.cur.execute("SELECT * FROM tasks").fetchall())
+        print('')
+        print(self.cur.execute("SELECT * FROM lists").fetchall())
+
     def add_owner(self, discord_id, user):
         sql = "INSERT OR IGNORE INTO owners (id, name) VALUES (?, ?)"
         self.cur.execute(sql, [discord_id, user])
-
-    def list_owners(self):
-        sql = "SELECT * FROM owners"
-        print(self.cur.execute(sql).fetchall())
 
     def get_owner_id(self, name):
         sql = "SELECT id FROM owners WHERE name=?"

@@ -43,7 +43,7 @@ def load_functions(bot):
             await context.author.send(output)
 
     @bot.command(name='logout')
-    async def version(context):
+    async def logout(context):
         if context.author.id == MASTER_ID:
             print("Logging out...")
             await bot.change_presence(status=discord.Status.offline)
