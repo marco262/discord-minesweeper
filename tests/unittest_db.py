@@ -35,6 +35,15 @@ class TestDatabase(unittest.TestCase):
         self.db.add_owner(OWNER_ID, "Marco262")
         self.assertEqual(OWNER_ID, self.db.get_owner_id("Marco262"))
 
+    def test_add_user_twice(self):
+        self.db.add_owner(OWNER_ID, "Marco262")
+        self.db.add_owner(OWNER_ID, "Marco263")
+        self.assertEqual(OWNER_ID, self.db.get_owner_id("Marco262"))
+
+        sql = "SELECT COUNT(*) FROM owners WHERE name=?"
+        self.assertEqual(1, self.db.cur.execute(sql, ["Marco262"]).fetchone()[0])
+        self.assertEqual(0, self.db.cur.execute(sql, ["Marco263"]).fetchone()[0])
+
     def test_add_task(self):
         rowid = self.db.add_task("Spoon Spain", OWNER_ID)
         retrieved_rowid = self.db.get_task_ids_by_name("Spain", OWNER_ID)
