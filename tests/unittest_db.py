@@ -63,12 +63,11 @@ class TestDatabase(unittest.TestCase):
         self.assertEqual(rowid, retrieved_rowid[0])
 
     def test_add_multiple_tasks(self):
-        rowid1 = self.db.add_task("Spoon Spain", OWNER_ID)
-        rowid2 = self.db.add_task("Spank Spain", OWNER_ID)
+        rowids = self.db.add_tasks(["Spoon Spain", "Spank Spain"], OWNER_ID)
         rowid3 = self.db.add_task("Spank Spain", OWNER_ID2)
         retrieved_rowids = self.db.get_task_ids_by_name("Spain", OWNER_ID)
-        self.assertEqual(rowid1, retrieved_rowids[0])
-        self.assertEqual(rowid2, retrieved_rowids[1])
+        self.assertEqual(rowids[0], retrieved_rowids[0])
+        self.assertEqual(rowids[1], retrieved_rowids[1])
         self.assertEqual(2, len(retrieved_rowids))
 
     def test_get_task_name(self):

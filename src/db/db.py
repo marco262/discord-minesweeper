@@ -44,6 +44,9 @@ class Db:
         self.cur.execute(sql, [task_name, owner_id])
         return self.cur.lastrowid
 
+    def add_tasks(self, task_names, owner_id):
+        return [self.add_task(t, owner_id) for t in task_names]
+
     def rename_task(self, task_id, task_name):
         sql = """
         UPDATE tasks SET name = ? WHERE rowid = ?;
