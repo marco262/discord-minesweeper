@@ -121,6 +121,15 @@ class Db:
         """
         self.cur.execute(sql, [task_id])
 
+    def uncomplete_task(self, task_id):
+        sql = """
+        UPDATE tasks
+        SET completed_ts = NULL
+        WHERE 
+          rowid = ?;
+        """
+        self.cur.execute(sql, [task_id])
+
     def get_task_complete_time(self, task_id):
         """
         :param task_id:

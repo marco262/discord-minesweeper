@@ -105,6 +105,13 @@ class TestDatabase(unittest.TestCase):
         delta = (current_time - completed_time).total_seconds()
         self.assertLessEqual(delta, 1)
 
+    def test_uncomplete_task(self):
+        rowid = self.db.add_task("Spoon Spain", OWNER_ID)
+        self.db.complete_task(rowid)
+        self.assertIsNotNone(self.db.get_task_complete_time(rowid))
+        self.db.uncomplete_task(rowid)
+        self.assertIsNone(self.db.get_task_complete_time(rowid))
+
     def test_get_tasks(self):
         rowid1 = self.db.add_task("Spoon Spain", OWNER_ID)
         rowid2 = self.db.add_task("Spank Spain", OWNER_ID)
