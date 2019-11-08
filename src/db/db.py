@@ -50,3 +50,55 @@ class Db:
           owner_id = ?;
         """
         return self.cur.execute(sql, ['%' + task_name + '%', owner_id]).fetchall()
+
+    def start_task(self, task_id, owner_id):
+        sql = """
+        UPDATE tasks
+        SET started_ts = CURRENT_TIMESTAMP
+        WHERE 
+          rowid = ? AND
+          owner_id = ?;
+        """
+        self.cur.execute(sql, [task_id, owner_id])
+
+    def get_task_start_time(self, task_id, owner_id):
+        """
+        :param task_id:
+        :param owner_id:
+        :return: Timestamp of format %Y-%m-%d %H:%M:%S
+        """
+        sql = """
+        SELECT 
+          started_ts
+        FROM tasks
+        WHERE
+          rowid = ? AND
+          owner_id = ?;
+        """
+        return self.cur.execute(sql, [task_id, owner_id]).fetchone()[0]
+
+    def complete_task(self, task_id, owner_id):
+        sql = """
+        UPDATE tasks
+        SET completed_ts = CURRENT_TIMESTAMP
+        WHERE 
+          rowid = ? AND
+          owner_id = ?;
+        """
+        self.cur.execute(sql, [task_id, owner_id])
+
+    def get_task_complete_time(self, task_id, owner_id):
+        """
+        :param task_id:
+        :param owner_id:
+        :return: Timestamp of format %Y-%m-%d %H:%M:%S
+        """
+        sql = """
+        SELECT 
+          completed_ts
+        FROM tasks
+        WHERE
+          rowid = ? AND
+          owner_id = ?;
+        """
+        return self.cur.execute(sql, [task_id, owner_id]).fetchone()[0]
