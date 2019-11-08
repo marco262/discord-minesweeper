@@ -152,7 +152,8 @@ class Db:
         UPDATE lists 
         SET
           items = ?,
-          created_ts = CURRENT_TIMESTAMP
+          created_ts = CURRENT_TIMESTAMP,
+          updated_ts = CURRENT_TIMESTAMP
         WHERE
           owner_id = ? 
         """

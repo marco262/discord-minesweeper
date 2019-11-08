@@ -44,7 +44,8 @@ sql = """
 CREATE TABLE IF NOT EXISTS lists (
     items TEXT NOT NULL,
     owner_id INTEGER NOT NULL UNIQUE,
-    created_ts TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    created_ts TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_ts TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 """
 print(cur.execute(sql).fetchall())

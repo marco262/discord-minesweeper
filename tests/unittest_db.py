@@ -125,7 +125,7 @@ class TestDatabase(unittest.TestCase):
         self.db.new_list([1, 2, 3], OWNER_ID)
         current_time = now_ts()
         retrieved_list = self.db.get_list(OWNER_ID)
-        self.assertEqual([[1, 2, 3], OWNER_ID, current_time], retrieved_list)
+        self.assertEqual([[1, 2, 3], OWNER_ID, current_time, current_time], retrieved_list)
         retrieved_list = self.db.get_list_items(OWNER_ID)
         self.assertEqual([1, 2, 3], retrieved_list)
 
@@ -134,8 +134,6 @@ class TestDatabase(unittest.TestCase):
         self.db.new_list([4, 5, 6], OWNER_ID)
         retrieved_list = self.db.get_list_items(OWNER_ID)
         self.assertEqual([4, 5, 6], retrieved_list)
-
-
 
 
 if __name__ == "__main__":
