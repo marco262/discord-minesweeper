@@ -34,6 +34,9 @@ def load_functions(bot):
     async def game(context, width: int=None, height: int=None, bombs: int=10, public: str=""):
         send_to_channel = (public == "public")
         output = new_game(width, height, bombs)
+        if len(output) > 2000:
+            await context.send("Oops! That map is too long to send. ({} > 2000). ".format(len(output)) +
+                               "Try reducing the map size or adding more bombs.")
         if send_to_channel:
             await context.send(output)
         else:
