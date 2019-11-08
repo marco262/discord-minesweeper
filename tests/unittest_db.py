@@ -126,13 +126,14 @@ class TestDatabase(unittest.TestCase):
         current_time = now_ts()
         retrieved_list = self.db.get_list(OWNER_ID)
         self.assertEqual([[1, 2, 3], OWNER_ID, current_time], retrieved_list)
+        retrieved_list = self.db.get_list_items(OWNER_ID)
+        self.assertEqual([1, 2, 3], retrieved_list)
 
     def test_add_and_replace_new_list(self):
         self.db.new_list([1, 2, 3], OWNER_ID)
         self.db.new_list([4, 5, 6], OWNER_ID)
-        current_time = now_ts()
-        retrieved_list = self.db.get_list(OWNER_ID)
-        self.assertEqual([[4, 5, 6], OWNER_ID, current_time], retrieved_list)
+        retrieved_list = self.db.get_list_items(OWNER_ID)
+        self.assertEqual([4, 5, 6], retrieved_list)
 
 
 

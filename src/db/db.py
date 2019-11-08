@@ -163,3 +163,7 @@ class Db:
         response = list(self.cur.execute(sql, [owner_id]).fetchone())
         response[0] = loads(response[0])
         return response
+
+    def get_list_items(self, owner_id):
+        sql = "SELECT items FROM lists WHERE owner_id = ?"
+        return loads(self.cur.execute(sql, [owner_id]).fetchone()[0])
