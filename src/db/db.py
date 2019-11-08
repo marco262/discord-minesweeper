@@ -25,7 +25,7 @@ class Db:
 
     def add_owner(self, discord_id, user):
         sql = "INSERT OR IGNORE INTO owners (id, name) VALUES (?, ?)"
-        print(self.cur.execute(sql, [discord_id, user]).fetchall())
+        self.cur.execute(sql, [discord_id, user])
 
     def list_owners(self):
         sql = "SELECT * FROM owners"
@@ -49,7 +49,8 @@ class Db:
           name LIKE ? AND
           owner_id = ?;
         """
-        return self.cur.execute(sql, ['%' + task_name + '%', owner_id]).fetchall()
+        response = self.cur.execute(sql, ['%' + task_name + '%', owner_id]).fetchall()
+        return [x[0] for x in response]
 
     def start_task(self, task_id, owner_id):
         sql = """
