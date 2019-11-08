@@ -168,3 +168,15 @@ class Db:
     def get_list_items(self, owner_id):
         sql = "SELECT items FROM lists WHERE owner_id = ?"
         return loads(self.cur.execute(sql, [owner_id]).fetchone()[0])
+
+    def update_list_items(self, list_items, owner_id):
+        sql = """
+        UPDATE lists 
+        SET
+          items = ?,
+          updated_ts = CURRENT_TIMESTAMP
+        WHERE
+          owner_id = ? 
+        """
+        json_list = dumps(list_items)
+        self.cur.execute(sql, [json_list, owner_id])

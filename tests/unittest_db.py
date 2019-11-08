@@ -135,6 +135,12 @@ class TestDatabase(unittest.TestCase):
         retrieved_list = self.db.get_list_items(OWNER_ID)
         self.assertEqual([4, 5, 6], retrieved_list)
 
+    def test_update_list(self):
+        self.db.new_list([1, 2, 3], OWNER_ID)
+        self.db.update_list_items([7, 8, 9], OWNER_ID)
+        retrieved_list = self.db.get_list_items(OWNER_ID)
+        self.assertEqual([7, 8, 9], retrieved_list)
+
 
 if __name__ == "__main__":
     unittest.main()
