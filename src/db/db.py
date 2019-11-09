@@ -90,7 +90,9 @@ class Db:
         """
         param_placeholders = ",".join("?"*len(task_ids))
         sql = f"SELECT * FROM tasks WHERE rowid IN ({param_placeholders})"
-        return self.cur.execute(sql, task_ids).fetchall()
+        response = self.cur.execute(sql, task_ids).fetchall()
+        column_names = [d[0] for d in self.cur.description]
+        return [dict(zip(column_names, row)) for row in response]
 
     def start_task(self, task_id):
         sql = """
