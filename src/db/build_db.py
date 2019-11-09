@@ -40,6 +40,7 @@ def create_tables(cur):
     CREATE TABLE IF NOT EXISTS tasks (
         name TEXT NOT NULL, 
         owner_id INTEGER NOT NULL,
+        state TEXT NOT NULL DEFAULT NOT_STARTED,
         created_ts TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         started_ts TIMESTAMP DEFAULT NULL,
         completed_ts TIMESTAMP DEFAULT NULL,

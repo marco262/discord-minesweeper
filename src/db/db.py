@@ -97,7 +97,9 @@ class Db:
     def start_task(self, task_id):
         sql = """
         UPDATE tasks
-        SET started_ts = CURRENT_TIMESTAMP
+        SET 
+            state = 'STARTED',
+            started_ts = CURRENT_TIMESTAMP
         WHERE 
           rowid = ?;
         """
@@ -120,7 +122,9 @@ class Db:
     def complete_task(self, task_id):
         sql = """
         UPDATE tasks
-        SET completed_ts = CURRENT_TIMESTAMP
+        SET 
+            state = 'COMPLETED',
+            completed_ts = CURRENT_TIMESTAMP
         WHERE 
           rowid = ?;
         """
@@ -129,7 +133,10 @@ class Db:
     def uncomplete_task(self, task_id):
         sql = """
         UPDATE tasks
-        SET completed_ts = NULL
+        SET 
+            state = 'NOT_STARTED',
+            started_ts = NULL,
+            completed_ts = NULL
         WHERE 
           rowid = ?;
         """

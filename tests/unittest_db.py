@@ -121,23 +121,26 @@ class TestDatabase(unittest.TestCase):
         self.db.start_task(rowid2)
         current_time = now_ts()
         expected_result = [
-            {'completed_ts': current_time,
-             'created_ts': current_time,
-             'name': 'Spoon Spain',
+            {'name': 'Spoon Spain',
              'owner_id': OWNER_ID,
+             'state': 'COMPLETED',
+             'created_ts': current_time,
              'started_ts': current_time,
+             'completed_ts': current_time,
              'time_spent_sec': 0},
-            {'completed_ts': None,
-             'created_ts': current_time,
-             'name': 'Spank Spain',
+            {'name': 'Spank Spain',
              'owner_id': OWNER_ID,
+             'state': 'STARTED',
+             'created_ts': current_time,
              'started_ts': current_time,
+             'completed_ts': None,
              'time_spent_sec': 0},
-            {'completed_ts': None,
-             'created_ts': current_time,
-             'name': 'Splain Spain',
+            {'name': 'Splain Spain',
              'owner_id': OWNER_ID,
+             'state': 'NOT_STARTED',
+             'created_ts': current_time,
              'started_ts': None,
+             'completed_ts': None,
              'time_spent_sec': 0}
         ]
         self.assertEqual(expected_result, self.db.get_tasks([rowid1, rowid2, rowid3]))
