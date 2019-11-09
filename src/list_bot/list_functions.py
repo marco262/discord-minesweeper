@@ -1,16 +1,7 @@
 from discord.ext.commands import Bot
 
 from src.db.db import Db
-
-UNCHECKED = ":white_large_square:"
-CHECKED = ":white_check_mark:"
-
-
-def print_task_list(task_list):
-    output = ""
-    for i, task in enumerate(task_list):
-        output += f"{UNCHECKED if task[4] is None else CHECKED} {task[0]}    ({i + 1})\n"
-    return output
+from src.utils import print_task_list
 
 
 def load_list_functions(bot: Bot):
