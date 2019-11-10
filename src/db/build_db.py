@@ -74,6 +74,7 @@ def create_tables(cur):
         created_ts TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_ts TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
+    PRAGMA case_sensitive_like=ON;
     """
     cur.executescript(sql)
 

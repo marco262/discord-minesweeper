@@ -1,8 +1,7 @@
 import sqlite3
 import sys
 from json import dumps, loads
-from typing import Iterable
-
+from typing import Iterable, List
 
 TEST_MODE = False
 
@@ -67,14 +66,23 @@ class Db:
         """
         self.cur.execute(sql, [task_name, task_id])
 
-    def get_task_ids_by_name(self, task_name, owner_id):
-        sql = """
+    def get_task_ids_by_name(self, task_ids, task_name):
+        """
+        Takes
+        :param task_ids:
+        :param task_name: Task name to match against
+        :param task_ids: List of task IDs to search through
+        :return:
+        """
+        param_placeholders = ",".join("?" * len(task_ids))
+        sql = f"""
         SELECT rowid FROM tasks
         WHERE 
           name LIKE ? AND
-          owner_id = ?;
+          rowid IN ({param_placeholders});
         """
-        response = self.cur.execute(sql, ['%' + task_name + '%', owner_id]).fetchall()
+        keyword = f"%{task_name}%"
+        response = self.cur.execute(sql, [keyword] + task_ids).fetchall()
         return [x[0] for x in response]
 
     def get_task_name(self, task_id):
@@ -200,7 +208,7 @@ class Db:
         response[0] = loads(response[0])
         return response
 
-    def get_list_items(self, owner_id):
+    def get_list_items(self, owner_id) -> List[int]:
         sql = "SELECT items FROM lists WHERE owner_id = ?"
         return loads(self.cur.execute(sql, [owner_id]).fetchone()[0])
 
