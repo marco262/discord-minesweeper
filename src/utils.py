@@ -4,7 +4,7 @@ from src.db.db import Db
 
 icons = {
     "NOT_STARTED": ":white_large_square:",
-    "STARTED": ":arrow_forward",
+    "STARTED": ":arrow_forward:",
     "CHECKED": ":white_check_mark:"
 }
 

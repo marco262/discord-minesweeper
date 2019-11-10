@@ -73,3 +73,13 @@ def _reorder_task(owner_id: int, owner_name: str, item: str, position: int):
         task_list = db.get_tasks(db.get_list_items(owner_id))
 
     return f"{owner_name}'s list\n" + print_task_list(task_list)
+
+
+def start_task(context, owner_id, owner_name, message):
+    with Db() as db:
+        task_ids = db.get_list_items(owner_id)
+        task_id = find_task_id_in_list(db, task_ids, message)
+        db.start_task(task_id)
+        task_list = db.get_tasks(db.get_list_items(owner_id))
+
+    return f"{owner_name}'s list\n" + print_task_list(task_list)
