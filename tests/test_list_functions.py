@@ -143,7 +143,7 @@ class TestListFunctions(unittest.TestCase):
         expected = "That task hasn't been started."
         self.assertEqual(expected, actual)
 
-    def test_check_task(self):
+    def test_check_and_uncheck_task(self):
         e.new_list(*build_context("foo\nbar\nbaz"))
         e.start_task(*build_context("bar"))
         actual = e.check_task(*build_context("bar"))
@@ -152,11 +152,23 @@ class TestListFunctions(unittest.TestCase):
                    ":white_check_mark: bar    (2)\n" \
                    ":white_large_square: baz    (3)"
         self.assertEqual(expected, actual)
+        actual = e.uncheck_task(*build_context("bar"))
+        expected = f"{OWNER_NAME}'s list\n" \
+                   ":white_large_square: foo    (1)\n" \
+                   ":white_large_square: bar    (2)\n" \
+                   ":white_large_square: baz    (3)"
+        self.assertEqual(expected, actual)
 
     def test_check_task_not_started(self):
         e.new_list(*build_context("foo\nbar\nbaz"))
         actual = e.check_task(*build_context("bar"))
         expected = "That task hasn't been started."
+        self.assertEqual(expected, actual)
+
+    def test_uncheck_task_not_completed(self):
+        e.new_list(*build_context("foo\nbar\nbaz"))
+        actual = e.uncheck_task(*build_context("bar"))
+        expected = "That task hasn't been completed."
         self.assertEqual(expected, actual)
 
 

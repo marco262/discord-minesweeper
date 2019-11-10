@@ -52,3 +52,11 @@ def load_list_functions(bot: Bot):
     @bot.command(name='stop')
     async def stop(context: Context):
         await handle_list_function(context, list_engine.stop_task)
+
+    @bot.command(name='check')
+    async def check(context: Context):
+        await handle_list_function(context, list_engine.check_task)
+
+    @bot.command(name='uncheck')
+    async def uncheck(context: Context):
+        await handle_list_function(context, list_engine.uncheck_task)
