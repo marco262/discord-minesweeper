@@ -106,8 +106,9 @@ class TestDatabase(unittest.TestCase):
 
     def test_start_task(self):
         rowid = self.db.add_task("Spoon Spain", OWNER_ID)
+        self.assertEqual("NOT_STARTED", self.db.get_task_state(rowid))
         self.db.start_task(rowid)
-        self.db.print_tables()
+        self.assertEqual("STARTED", self.db.get_task_state(rowid))
         started_time = ts_to_epoch(self.db.get_task_start_time(rowid))
         # Accept any epoch that's within one second of the current epoch.
         self.assertAlmostEqual(now_epoch(), started_time, delta=1)
@@ -124,18 +125,31 @@ class TestDatabase(unittest.TestCase):
           rowid = ?;
         """
         self.db.cur.execute(sql, [five_seconds_ago, rowid])
+        self.assertEqual("STARTED", self.db.get_task_state(rowid))
         self.db.stop_task(rowid)
+        self.assertEqual("NOT_STARTED", self.db.get_task_state(rowid))
         self.assertIsNone(self.db.get_task_start_time(rowid))
         self.assertAlmostEqual(5, self.db.get_time_spent_sec(rowid), delta=1)
 
     def test_complete_task(self):
         rowid = self.db.add_task("Spoon Spain", OWNER_ID)
+        five_seconds_ago = epoch_to_ts(now_epoch() - 5)
+        sql = """
+        UPDATE tasks
+        SET 
+            state = 'STARTED',
+            started_ts = ?
+        WHERE 
+          rowid = ?;
+        """
+        self.db.cur.execute(sql, [five_seconds_ago, rowid])
+        self.assertEqual("STARTED", self.db.get_task_state(rowid))
         self.db.complete_task(rowid)
-        current_time = now_dt()
-        completed_time = ts_to_dt(self.db.get_task_complete_time(rowid))
+        self.assertEqual("COMPLETED", self.db.get_task_state(rowid))
+        completed_time = ts_to_epoch(self.db.get_task_complete_time(rowid))
         # Accept any epoch that's within one second of the current epoch.
-        delta = (current_time - completed_time).total_seconds()
-        self.assertLessEqual(delta, 1)
+        self.assertAlmostEqual(now_epoch(), completed_time, delta=1)
+        self.assertAlmostEqual(5, self.db.get_time_spent_sec(rowid), delta=1)
 
     def test_uncomplete_task(self):
         rowid = self.db.add_task("Spoon Spain", OWNER_ID)
