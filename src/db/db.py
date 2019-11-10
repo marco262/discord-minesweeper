@@ -107,9 +107,10 @@ class Db:
         :param task_ids: List of ids
         :return: List of lists
         """
-        param_placeholders = ",".join("?"*len(task_ids))
-        sql = f"SELECT * FROM tasks WHERE rowid IN ({param_placeholders})"
-        response = self.cur.execute(sql, task_ids).fetchall()
+        sql = f"SELECT * FROM tasks WHERE rowid = ?"
+        response = []
+        for task_id in task_ids:
+            response.append(self.cur.execute(sql, [task_id]).fetchone())
         column_names = [d[0] for d in self.cur.description]
         return [dict(zip(column_names, row)) for row in response]
 

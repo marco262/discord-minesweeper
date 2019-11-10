@@ -82,6 +82,39 @@ class TestListFunctions(unittest.TestCase):
         expected = f'Couldn\'t find any list item matching "spam"'
         self.assertEqual(expected, actual)
 
+    def test_reorder_top(self):
+        e.new_list(*build_context("foo\nbar\nbaz\nspam\nsplut"))
+        actual = e.top(*build_context('spa'))
+        expected = f"{OWNER_NAME}'s list\n" \
+                   ":white_large_square: spam    (1)\n" \
+                   ":white_large_square: foo    (2)\n" \
+                   ":white_large_square: bar    (3)\n" \
+                   ":white_large_square: baz    (4)\n" \
+                   ":white_large_square: splut    (5)"
+        self.assertEqual(expected, actual)
+
+    def test_reorder_bottom(self):
+        e.new_list(*build_context("foo\nbar\nbaz\nspam\nsplut"))
+        actual = e.bottom(*build_context('bar'))
+        expected = f"{OWNER_NAME}'s list\n" \
+                   ":white_large_square: foo    (1)\n" \
+                   ":white_large_square: baz    (2)\n" \
+                   ":white_large_square: spam    (3)\n" \
+                   ":white_large_square: splut    (4)\n" \
+                   ":white_large_square: bar    (5)"
+        self.assertEqual(expected, actual)
+
+    def test_reorder_move(self):
+        e.new_list(*build_context("foo\nbar\nbaz\nspam\nsplut"))
+        actual = e.move(*build_context('"splut" 3'))
+        expected = f"{OWNER_NAME}'s list\n" \
+                   ":white_large_square: foo    (1)\n" \
+                   ":white_large_square: bar    (2)\n" \
+                   ":white_large_square: splut    (3)\n" \
+                   ":white_large_square: baz    (4)\n" \
+                   ":white_large_square: spam    (5)"
+        self.assertEqual(expected, actual)
+
 
 if __name__ == "__main__":
     unittest.main()

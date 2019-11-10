@@ -32,3 +32,15 @@ def load_list_functions(bot: Bot):
     @bot.command(name='remove')
     async def add(context: Context):
         await handle_list_function(context, list_engine.remove_tasks)
+
+    @bot.command(name='top')
+    async def add(context: Context):
+        await handle_list_function(context, list_engine.top)
+
+    @bot.command(name='bottom')
+    async def add(context: Context):
+        await handle_list_function(context, list_engine.bottom)
+
+    @bot.command(name='move')
+    async def add(context: Context):
+        await handle_list_function(context, list_engine.move)

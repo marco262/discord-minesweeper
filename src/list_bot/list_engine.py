@@ -1,3 +1,5 @@
+from re import match
+
 from src.db.db import Db
 from src.utils import print_task_list, find_task_id_in_list, NoItemsFoundException, MultipleItemsFoundException
 
@@ -41,8 +43,43 @@ def remove_tasks(context, owner_id, owner_name, message):
                 return f'Couldn\'t find any list item matching "{item}"'
             except MultipleItemsFoundException as e:
                 return f'Multiple items found matching "{item}":\n' + "\n".join(e.args[0])
-            print(task_id)
             task_ids.remove(task_id)
+        db.update_list_items(task_ids, owner_id)
+        task_list = db.get_tasks(db.get_list_items(owner_id))
+
+    return f"{owner_name}'s list\n" + print_task_list(task_list)
+
+
+def top(context, owner_id, owner_name, message):
+    return _reorder_task(owner_id, owner_name, message, 1)
+
+
+def bottom(context, owner_id, owner_name, message):
+    return _reorder_task(owner_id, owner_name, message, -1)
+
+
+def move(context, owner_id, owner_name, message):
+    m = match(r'"(.*?)" (\d+)', message)
+    if not m:
+        return "Sorry, I don't understand. Accepted format: ~move \"<item>\" <position>"
+    print(m.groups())
+    return _reorder_task(owner_id, owner_name, m.group(1), int(m.group(2)))
+
+
+def _reorder_task(owner_id: int, owner_name: str, item: str, position: int):
+    with Db() as db:
+        task_ids = db.get_list_items(owner_id)
+        try:
+            task_id = find_task_id_in_list(db, task_ids, item)
+        except NoItemsFoundException:
+            return f"Couldn't find any list item matching \"{item}\""
+        except MultipleItemsFoundException as e:
+            return f"Multiple items found matching \"{item}\":\n" + "\n".join(e.args[0])
+        task_ids.remove(task_id)
+        if position == -1:
+            task_ids.append(task_id)
+        else:
+            task_ids.insert(position - 1, task_id)
         db.update_list_items(task_ids, owner_id)
         task_list = db.get_tasks(db.get_list_items(owner_id))
 
