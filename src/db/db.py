@@ -66,7 +66,7 @@ class Db:
         """
         self.cur.execute(sql, [task_name, task_id])
 
-    def filter_task_ids_by_name(self, task_ids, task_name):
+    def filter_task_ids_by_name(self, task_ids, task_name) -> List[int]:
         """
         Takes
         :param task_ids:

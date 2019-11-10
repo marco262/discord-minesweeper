@@ -54,6 +54,34 @@ class TestListFunctions(unittest.TestCase):
                    ":white_large_square: baz    (3)"
         self.assertEqual(expected, actual)
 
+    def test_remove_task_by_pos(self):
+        e.new_list(*build_context("foo\nbar\nbaz"))
+        actual = e.remove_tasks(*build_context("2"))
+        expected = f"{OWNER_NAME}'s list\n" \
+                   ":white_large_square: foo    (1)\n" \
+                   ":white_large_square: baz    (2)"
+        self.assertEqual(expected, actual)
+
+    def test_remove_task_by_name(self):
+        e.new_list(*build_context("foo\nbar\nbaz"))
+        actual = e.remove_tasks(*build_context("bar"))
+        expected = f"{OWNER_NAME}'s list\n" \
+                   ":white_large_square: foo    (1)\n" \
+                   ":white_large_square: baz    (2)"
+        self.assertEqual(expected, actual)
+
+    def test_remove_task_multiple_values(self):
+        e.new_list(*build_context("foo\nbar\nbaz"))
+        actual = e.remove_tasks(*build_context("ba"))
+        expected = f'Multiple items found matching "ba":\nbar\nbaz'
+        self.assertEqual(expected, actual)
+
+    def test_remove_task_no_value(self):
+        e.new_list(*build_context("foo\nbar\nbaz"))
+        actual = e.remove_tasks(*build_context("spam"))
+        expected = f'Couldn\'t find any list item matching "spam"'
+        self.assertEqual(expected, actual)
+
 
 if __name__ == "__main__":
     unittest.main()
