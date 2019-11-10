@@ -130,6 +130,19 @@ class TestListFunctions(unittest.TestCase):
                    ":white_large_square: baz    (3)"
         self.assertEqual(expected, actual)
 
+    def test_already_started(self):
+        e.new_list(*build_context("foo\nbar\nbaz"))
+        e.start_task(*build_context("bar"))
+        actual = e.start_task(*build_context("bar"))
+        expected = "That task is already started."
+        self.assertEqual(expected, actual)
+
+    def test_already_stopped(self):
+        e.new_list(*build_context("foo\nbar\nbaz"))
+        actual = e.stop_task(*build_context("bar"))
+        expected = "That task hasn't been started."
+        self.assertEqual(expected, actual)
+
 
 if __name__ == "__main__":
     unittest.main()
