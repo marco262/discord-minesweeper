@@ -12,24 +12,40 @@ OWNER_NAME2 = "FunctionalTestUser2"
 TIME_FORMAT = "%Y-%m-%d %H:%M:%S"
 
 
-def ts_to_dt(ts, fmt=TIME_FORMAT):
+def epoch_to_ts(epoch: int) -> str:
+    return dt_to_ts(epoch_to_dt(epoch))
+
+
+def epoch_to_dt(epoch: int) -> datetime:
+    return datetime.fromtimestamp(epoch)
+
+
+def ts_to_epoch(ts: str) -> int:
+    return int(ts_to_dt(ts).timestamp())
+
+
+def ts_to_dt(ts: str, fmt=TIME_FORMAT) -> datetime:
     return datetime.strptime(ts, fmt)
 
 
-def ts_to_epoch(ts):
-    return ts_to_dt(ts).timestamp()
+def dt_to_epoch(dt: datetime) -> int:
+    return int(dt.timestamp())
 
 
-def dt_to_ts(dt: datetime):
+def dt_to_ts(dt: datetime) -> str:
     return dt.strftime(TIME_FORMAT)
 
 
-def now_epoch():
+def now_epoch() -> int:
+    return dt_to_epoch(now_dt())
+
+
+def now_ts() -> str:
+    return dt_to_ts(now_dt())
+
+
+def now_dt() -> datetime:
     return datetime.utcnow()
-
-
-def now_ts():
-    return dt_to_ts(now_epoch())
 
 
 class TestDatabase(unittest.TestCase):
@@ -91,16 +107,31 @@ class TestDatabase(unittest.TestCase):
     def test_start_task(self):
         rowid = self.db.add_task("Spoon Spain", OWNER_ID)
         self.db.start_task(rowid)
-        current_time = now_epoch()
-        started_time = ts_to_dt(self.db.get_task_start_time(rowid))
+        self.db.print_tables()
+        started_time = ts_to_epoch(self.db.get_task_start_time(rowid))
         # Accept any epoch that's within one second of the current epoch.
-        delta = (current_time - started_time).total_seconds()
-        self.assertLessEqual(delta, 1)
+        self.assertAlmostEqual(now_epoch(), started_time, delta=1)
+
+    def test_stop_task(self):
+        rowid = self.db.add_task("Spoon Spain", OWNER_ID)
+        five_seconds_ago = epoch_to_ts(now_epoch() - 5)
+        sql = """
+        UPDATE tasks
+        SET 
+            state = 'STARTED',
+            started_ts = ?
+        WHERE 
+          rowid = ?;
+        """
+        self.db.cur.execute(sql, [five_seconds_ago, rowid])
+        self.db.stop_task(rowid)
+        self.assertIsNone(self.db.get_task_start_time(rowid))
+        self.assertAlmostEqual(5, self.db.get_time_spent_sec(rowid), delta=1)
 
     def test_complete_task(self):
         rowid = self.db.add_task("Spoon Spain", OWNER_ID)
         self.db.complete_task(rowid)
-        current_time = now_epoch()
+        current_time = now_dt()
         completed_time = ts_to_dt(self.db.get_task_complete_time(rowid))
         # Accept any epoch that's within one second of the current epoch.
         delta = (current_time - completed_time).total_seconds()

@@ -37,7 +37,9 @@ class Db:
     def print_tables(self):
         import pandas
         tables = ["owners", "tasks", "lists"]
+        pandas.set_option("display.width", None)
         for t in tables:
+            print("="*20 + t + "="*20)
             print(pandas.read_sql_query(f"SELECT * FROM {t}", self.conn))
             print('')
 
@@ -132,6 +134,32 @@ class Db:
         sql = """
         SELECT 
           started_ts
+        FROM tasks
+        WHERE
+          rowid = ?;
+        """
+        return self.cur.execute(sql, [task_id]).fetchone()[0]
+
+    def stop_task(self, task_id):
+        sql = """
+        UPDATE tasks
+        SET 
+            state = 'NOT_STARTED',
+            started_ts = NULL,
+            time_spent_sec = CAST(time_spent_sec + ((julianday(CURRENT_TIMESTAMP) - julianday(started_ts)) * 86400.0) as INTEGER)
+        WHERE 
+          rowid = ?;
+        """
+        self.cur.execute(sql, [task_id])
+
+    def get_time_spent_sec(self, task_id) -> int:
+        """
+        :param task_id:
+        :return:
+        """
+        sql = """
+        SELECT 
+          time_spent_sec
         FROM tasks
         WHERE
           rowid = ?;
