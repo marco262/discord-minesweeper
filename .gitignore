@@ -107,3 +107,4 @@ venv.bak/
 
 *.json
 *.db
+*.py__jb_tmp__
