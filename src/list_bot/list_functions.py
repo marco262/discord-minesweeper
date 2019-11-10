@@ -63,3 +63,7 @@ def load_list_functions(bot: Bot):
     @bot.command(name='tasktime')
     async def task_time(context: Context):
         await handle_list_function(context, list_engine.task_time)
+
+    @bot.command(name='clear')
+    async def clear(context: Context):
+        await handle_list_function(context, list_engine.clear_checked_tasks)

@@ -96,7 +96,7 @@ class TestDatabase(unittest.TestCase):
         rowid1 = self.db.add_task("Spoon Spain", OWNER_ID)
         rowid2 = self.db.add_task("Spank Spain", OWNER_ID)
         rowid3 = self.db.add_task("Splain Spain", OWNER_ID)
-        self.assertEqual(['Spoon Spain', 'Splain Spain'], self.db.get_task_names([rowid1, rowid3, 10001, 10002]))
+        self.assertEqual(['Spoon Spain', 'Splain Spain'], self.db.get_task_names([rowid1, rowid3]))
 
     def test_rename_task(self):
         rowid = self.db.add_task("Spoon Spain", OWNER_ID)

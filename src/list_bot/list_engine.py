@@ -6,20 +6,17 @@ from src.utils import print_task_list, find_task_id_in_list, pretty_task_time
 
 def new_list(context, owner_id, owner_name, message):
     task_names = message.split("\n")
-
     with Db() as db:
         db.add_owner(owner_id, owner_name)
         task_ids = db.add_tasks(task_names, owner_id)
         db.new_list(task_ids, owner_id)
         task_list = db.get_tasks(task_ids)
-
     return f"Created a new list for {owner_name}\n" + print_task_list(task_list)
 
 
 def show_list(context, owner_id, owner_name, message):
     with Db() as db:
         task_list = db.get_tasks(db.get_list_items(owner_id))
-
     return f"{owner_name}'s list\n" + print_task_list(task_list)
 
 
@@ -29,7 +26,6 @@ def add_tasks(context, owner_id, owner_name, message):
         task_list = db.get_list_items(owner_id)
         db.update_list_items(task_list + new_row_ids, owner_id)
         task_list = db.get_tasks(db.get_list_items(owner_id))
-
     return f"{owner_name}'s list\n" + print_task_list(task_list)
 
 
@@ -41,7 +37,6 @@ def remove_tasks(context, owner_id, owner_name, message):
             task_ids.remove(task_id)
         db.update_list_items(task_ids, owner_id)
         task_list = db.get_tasks(db.get_list_items(owner_id))
-
     return f"{owner_name}'s list\n" + print_task_list(task_list)
 
 
@@ -71,7 +66,6 @@ def _reorder_task(owner_id: int, owner_name: str, item: str, position: int):
             task_ids.insert(position - 1, task_id)
         db.update_list_items(task_ids, owner_id)
         task_list = db.get_tasks(db.get_list_items(owner_id))
-
     return f"{owner_name}'s list\n" + print_task_list(task_list)
 
 
@@ -83,7 +77,6 @@ def start_task(context, owner_id, owner_name, message):
             return "That task is already started."
         db.start_task(task_id)
         task_list = db.get_tasks(db.get_list_items(owner_id))
-
     return f"{owner_name}'s list\n" + print_task_list(task_list)
 
 
@@ -95,7 +88,6 @@ def stop_task(context, owner_id, owner_name, message):
             return "That task hasn't been started."
         db.stop_task(task_id)
         task_list = db.get_tasks(db.get_list_items(owner_id))
-
     return f"{owner_name}'s list\n" + print_task_list(task_list)
 
 
@@ -107,7 +99,6 @@ def check_task(context, owner_id, owner_name, message):
             return "That task hasn't been started."
         db.complete_task(task_id)
         task_list = db.get_tasks(db.get_list_items(owner_id))
-
     return f"{owner_name}'s list\n" + print_task_list(task_list)
 
 
@@ -119,18 +110,29 @@ def uncheck_task(context, owner_id, owner_name, message):
             return "That task hasn't been completed."
         db.uncomplete_task(task_id)
         task_list = db.get_tasks(db.get_list_items(owner_id))
-
     return f"{owner_name}'s list\n" + print_task_list(task_list)
 
 
 def task_time(content, owner_id, owner_name, message):
     with Db() as db:
         task_ids = db.get_list_items(owner_id)
-        time_spent_secs = db.get_time_spent_secs(task_ids)
-        task_names = db.get_task_names(task_ids)
-        tasks = zip(task_names, time_spent_secs)
+        tasks = db.get_tasks(task_ids)
         output = f"{owner_name} times\n"
         for t in tasks:
-            output += f"{t[0]}: {pretty_task_time(t[1])}\n"
-        output += f"\nTotal time: {pretty_task_time(sum(time_spent_secs))}"
+            output += f"{t['name']}: {pretty_task_time(t['time_spent_sec'])}\n"
+        output += f"\nTotal time: {pretty_task_time(sum([t['time_spent_sec'] for t in tasks]))}"
     return output
+
+
+def clear_checked_tasks(context, owner_id, owner_name, message):
+    with Db() as db:
+        task_ids = db.get_list_items(owner_id)
+        task_states = db.get_task_states(task_ids)
+        tasks = zip(task_ids, task_states)
+        unchecked_tasks = []
+        for task_id, state in tasks:
+            if state != "CHECKED":
+                unchecked_tasks.append(task_id)
+        db.update_list_items(unchecked_tasks, owner_id)
+        task_list = db.get_tasks(db.get_list_items(owner_id))
+    return f"{owner_name}'s list\n" + print_task_list(task_list)

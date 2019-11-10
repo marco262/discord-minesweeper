@@ -183,13 +183,24 @@ class TestListFunctions(unittest.TestCase):
         e.start_task(*build_context("foo"))
         sleep(2)
         e.check_task(*build_context("foo"))
-        actual = e.task_time(*build_context(""))
+        actual = e.task_time(*build_context())
         expected = f"{OWNER_ID} times" \
                    f"foo: 4s" \
                    f"bar: 2s" \
                    f"baz: 0s" \
                    f"" \
                    f"Total time: 6s"
+
+    def test_clear_tasks(self):
+        e.new_list(*build_context("foo\nbar\nbaz"))
+        e.start_task(*build_context("foo"))
+        e.check_task(*build_context("foo"))
+        e.start_task(*build_context("bar"))
+        actual = e.clear_checked_tasks(*build_context())
+        expected = f"FunctionalTestUser's list\n" \
+                   f":arrow_forward: bar    (1)\n" \
+                   f":white_large_square: baz    (2)"
+        self.assertEqual(expected, actual)
 
 
 if __name__ == "__main__":
