@@ -1,18 +1,18 @@
 from discord.ext.commands import Bot, Context
 
 from src.list_bot import list_engine
+from src.utils import ListBotError
 
 
 async def handle_list_function(context, func):
     command = context.prefix + context.command.name
     # Get everything after the command
     message = context.message.content[len(command):].strip()
-    await context.send(func(
-        context,
-        context.author.id,
-        context.author.name,
-        message
-    ))
+    try:
+        output = func(context, context.author.id, context.author.name, message)
+    except Exception as e:
+        output = e.args
+    await context.send(output)
 
 
 def load_list_functions(bot: Bot):

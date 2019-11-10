@@ -4,6 +4,7 @@ from unittest import mock
 
 from src.db.db import Db
 from src.list_bot import list_engine as e
+from src.utils import ListBotError
 
 OWNER_ID = -1
 OWNER_NAME = "FunctionalTestUser"
@@ -72,15 +73,13 @@ class TestListFunctions(unittest.TestCase):
 
     def test_remove_task_multiple_values(self):
         e.new_list(*build_context("foo\nbar\nbaz"))
-        actual = e.remove_tasks(*build_context("ba"))
-        expected = f'Multiple items found matching "ba":\nbar\nbaz'
-        self.assertEqual(expected, actual)
+        with self.assertRaisesRegex(ListBotError, f'Multiple items found matching "ba":\nbar\nbaz'):
+            e.remove_tasks(*build_context("ba"))
 
     def test_remove_task_no_value(self):
         e.new_list(*build_context("foo\nbar\nbaz"))
-        actual = e.remove_tasks(*build_context("spam"))
-        expected = f'Couldn\'t find any list item matching "spam"'
-        self.assertEqual(expected, actual)
+        with self.assertRaisesRegex(ListBotError, f'Couldn\'t find any list item matching "spam"'):
+            e.remove_tasks(*build_context("spam"))
 
     def test_reorder_top(self):
         e.new_list(*build_context("foo\nbar\nbaz\nspam\nsplut"))

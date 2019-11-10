@@ -31,16 +31,12 @@ def find_task_id_in_list(db: Db, task_ids: List[int], item: str) -> int:
     else:
         filtered_task_ids = db.filter_task_ids_by_name(task_ids, item)
         if len(filtered_task_ids) == 0:
-            raise NoItemsFoundException()
+            raise ListBotError(f"Couldn't find any list item matching \"{item}\"")
         if len(filtered_task_ids) > 1:
             task_names = db.get_task_names(filtered_task_ids)
-            raise MultipleItemsFoundException(task_names)
+            raise ListBotError(f"Multiple items found matching \"{item}\":\n" + "\n".join(task_names))
         return filtered_task_ids[0]
 
 
-class NoItemsFoundException(Exception):
-    pass
-
-
-class MultipleItemsFoundException(Exception):
+class ListBotError(Exception):
     pass

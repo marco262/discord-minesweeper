@@ -21,7 +21,6 @@ class Db:
             try:
                 if exc_type:
                     self.conn.rollback()
-                    print(exc_type, exc_val, exc_tb, file=sys.stderr)
                 elif self.auto_commit:
                     self.conn.commit()
             finally:
