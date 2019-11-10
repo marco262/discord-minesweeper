@@ -7,30 +7,30 @@ from typing import Iterable
 class Db:
 
     def __init__(self, filename="database_files/list-keeper.db", auto_commit=True):
-        self.db = sqlite3.connect(filename)
-        self.cur = self.db.cursor()
+        self.conn = sqlite3.connect(filename)
+        self.cur = self.conn.cursor()
         self.auto_commit = auto_commit
 
     def __enter__(self):
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        if self.db:
+        if self.conn:
             try:
                 if exc_type:
-                    self.db.rollback()
+                    self.conn.rollback()
                     print(exc_type, exc_val, exc_tb, file=sys.stderr)
                 elif self.auto_commit:
-                    self.db.commit()
+                    self.conn.commit()
             finally:
-                self.db.close()
+                self.conn.close()
 
     def print_tables(self):
-        print(self.cur.execute("SELECT * FROM owners").fetchall())
-        print('')
-        print(self.cur.execute("SELECT * FROM tasks").fetchall())
-        print('')
-        print(self.cur.execute("SELECT * FROM lists").fetchall())
+        import pandas
+        tables = ["owners", "tasks", "lists"]
+        for t in tables:
+            print(pandas.read_sql_query(f"SELECT * FROM {t}", self.conn))
+            print('')
 
     def add_owner(self, discord_id, user):
         sql = "INSERT OR IGNORE INTO owners (id, name) VALUES (?, ?)"

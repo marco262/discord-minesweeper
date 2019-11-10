@@ -41,8 +41,8 @@ class TestDatabase(unittest.TestCase):
         self.db = Db()
 
     def tearDown(self):
-        self.db.db.rollback()
-        self.db.db.close()
+        self.db.conn.rollback()
+        self.db.conn.close()
 
     def test_add_user(self):
         self.db.add_owner(OWNER_ID, "Marco262")
