@@ -22,11 +22,11 @@ class TestListFunctions(unittest.TestCase):
         os.chdir("..")
 
     def setUp(self):
-        with Db() as db:
-            db.wipe_owner_data(OWNER_ID)
+        pass
 
     def tearDown(self):
-        pass
+        with Db() as db:
+            db.wipe_owner_data(OWNER_ID)
 
     def test_new_list(self):
         actual = e.new_list(*build_context("foo\nbar\nbaz"))

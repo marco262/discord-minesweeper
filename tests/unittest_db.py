@@ -6,7 +6,9 @@ from src.db.db import Db
 
 
 OWNER_ID = -1
+OWNER_NAME1 = "FunctionalTestUser1"
 OWNER_ID2 = -2
+OWNER_NAME2 = "FunctionalTestUser2"
 TIME_FORMAT = "%Y-%m-%d %H:%M:%S"
 
 
@@ -45,17 +47,17 @@ class TestDatabase(unittest.TestCase):
         self.db.conn.close()
 
     def test_add_user(self):
-        self.db.add_owner(OWNER_ID, "Marco262")
-        self.assertEqual(OWNER_ID, self.db.get_owner_id("Marco262"))
+        self.db.add_owner(OWNER_ID, OWNER_NAME1)
+        self.assertEqual(OWNER_ID, self.db.get_owner_id(OWNER_NAME1))
 
     def test_add_user_twice(self):
-        self.db.add_owner(OWNER_ID, "Marco262")
-        self.db.add_owner(OWNER_ID, "Marco263")
-        self.assertEqual(OWNER_ID, self.db.get_owner_id("Marco262"))
+        self.db.add_owner(OWNER_ID, OWNER_NAME1)
+        self.db.add_owner(OWNER_ID, OWNER_NAME2)
+        self.assertEqual(OWNER_ID, self.db.get_owner_id(OWNER_NAME1))
 
         sql = "SELECT COUNT(*) FROM owners WHERE name=?"
-        self.assertEqual(1, self.db.cur.execute(sql, ["Marco262"]).fetchone()[0])
-        self.assertEqual(0, self.db.cur.execute(sql, ["Marco263"]).fetchone()[0])
+        self.assertEqual(1, self.db.cur.execute(sql, [OWNER_NAME1]).fetchone()[0])
+        self.assertEqual(0, self.db.cur.execute(sql, [OWNER_NAME2]).fetchone()[0])
 
     def test_add_task(self):
         rowid = self.db.add_task("Spoon Spain", OWNER_ID)
@@ -64,10 +66,7 @@ class TestDatabase(unittest.TestCase):
 
     def test_add_multiple_tasks(self):
         rowids = self.db.add_tasks(["Spoon Spain", "Spank Spain", "Split Spain", "Flog France"], OWNER_ID)
-        print([rowids[0], rowids[2], rowids[3]])
         retrieved_rowids = self.db.filter_task_ids_by_name([rowids[0], rowids[2], rowids[3]], "spain")
-        print(rowids)
-        print(retrieved_rowids)
         self.assertEqual(rowids[0], retrieved_rowids[0])
         self.assertEqual(rowids[2], retrieved_rowids[1])
         self.assertEqual(2, len(retrieved_rowids))
@@ -82,7 +81,7 @@ class TestDatabase(unittest.TestCase):
         rowid1 = self.db.add_task("Spoon Spain", OWNER_ID)
         rowid2 = self.db.add_task("Spank Spain", OWNER_ID)
         rowid3 = self.db.add_task("Splain Spain", OWNER_ID)
-        self.assertEqual(['Spoon Spain', 'Splain Spain'], self.db.get_task_names([rowid1, rowid3, 5, 7]))
+        self.assertEqual(['Spoon Spain', 'Splain Spain'], self.db.get_task_names([rowid1, rowid3, 10001, 10002]))
 
     def test_rename_task(self):
         rowid = self.db.add_task("Spoon Spain", OWNER_ID)
