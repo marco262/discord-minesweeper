@@ -4,6 +4,9 @@ from json import dumps, loads
 from typing import Iterable
 
 
+TEST_MODE = False
+
+
 class Db:
 
     def __init__(self, filename="database_files/list-keeper.db", auto_commit=True):
@@ -20,6 +23,8 @@ class Db:
                 if exc_type:
                     self.conn.rollback()
                     print(exc_type, exc_val, exc_tb, file=sys.stderr)
+                elif TEST_MODE:
+                    self.conn.rollback()
                 elif self.auto_commit:
                     self.conn.commit()
             finally:

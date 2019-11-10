@@ -10,7 +10,7 @@ def get_icon(task):
 
 
 def print_task_list(task_list):
-    output = ""
+    output = []
     for i, task in enumerate(task_list):
-        output += f"{get_icon(task)} {task[0]}    ({i + 1})\n"
-    return output
+        output.append(f"{get_icon(task)} {task['name']}    ({i + 1})")
+    return "\n".join(output)
