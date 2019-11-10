@@ -182,7 +182,7 @@ class Db:
         sql = """
         UPDATE tasks
         SET 
-            state = 'COMPLETED',
+            state = 'CHECKED',
             completed_ts = CURRENT_TIMESTAMP,
             time_spent_sec = CAST(time_spent_sec + ((julianday(CURRENT_TIMESTAMP) - julianday(started_ts)) * 86400.0) as INTEGER)
         WHERE 
