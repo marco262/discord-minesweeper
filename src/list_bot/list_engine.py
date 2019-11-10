@@ -1,7 +1,7 @@
 from re import match
 
 from src.db.db import Db
-from src.utils import print_task_list, find_task_id_in_list
+from src.utils import print_task_list, find_task_id_in_list, pretty_task_time
 
 
 def new_list(context, owner_id, owner_name, message):
@@ -121,3 +121,16 @@ def uncheck_task(context, owner_id, owner_name, message):
         task_list = db.get_tasks(db.get_list_items(owner_id))
 
     return f"{owner_name}'s list\n" + print_task_list(task_list)
+
+
+def task_time(content, owner_id, owner_name, message):
+    with Db() as db:
+        task_ids = db.get_list_items(owner_id)
+        time_spent_secs = db.get_time_spent_secs(task_ids)
+        task_names = db.get_task_names(task_ids)
+        tasks = zip(task_names, time_spent_secs)
+        output = f"{owner_name} times\n"
+        for t in tasks:
+            output += f"{t[0]}: {pretty_task_time(t[1])}\n"
+        output += f"\nTotal time: {pretty_task_time(sum(time_spent_secs))}"
+    return output

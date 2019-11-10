@@ -1,5 +1,4 @@
 import sqlite3
-import sys
 from json import dumps, loads
 from typing import Iterable, List
 
@@ -87,31 +86,34 @@ class Db:
         return [x[0] for x in response]
 
     def get_task_name(self, task_id):
-        sql = """
-        SELECT name FROM tasks
-        WHERE rowid=?
-        """
-        return self.cur.execute(sql, [task_id]).fetchone()[0]
+        return self.get_task_names([task_id])[0]
 
     def get_task_names(self, task_ids: Iterable):
         """
         :param task_ids: List of ids
         :return: List of str
         """
-        sql = f"SELECT name FROM tasks WHERE rowid = ?"
+        sql = "SELECT name FROM tasks WHERE rowid = ?"
         response = []
         for task_id in task_ids:
             name = self.cur.execute(sql, [task_id]).fetchone()
-            if name:
-                response.append(name[0])
+            response.append(name[0])
         return response
 
     def get_task_state(self, task_id):
-        sql = """
-        SELECT state FROM tasks
-        WHERE rowid=?
+        return self.get_task_states([task_id])[0]
+
+    def get_task_states(self, task_ids: Iterable):
         """
-        return self.cur.execute(sql, [task_id]).fetchone()[0]
+        :param task_ids: List of ids
+        :return: List of str
+        """
+        sql = "SELECT state FROM tasks WHERE rowid = ?"
+        response = []
+        for task_id in task_ids:
+            name = self.cur.execute(sql, [task_id]).fetchone()
+            response.append(name[0])
+        return response
 
     def get_tasks(self, task_ids: Iterable):
         """
@@ -122,8 +124,7 @@ class Db:
         response = []
         for task_id in task_ids:
             task = self.cur.execute(sql, [task_id]).fetchone()
-            if task:
-                response.append(task)
+            response.append(task)
         column_names = [d[0] for d in self.cur.description]
         return [dict(zip(column_names, row)) for row in response]
 
@@ -158,25 +159,26 @@ class Db:
         SET 
             state = 'NOT_STARTED',
             started_ts = NULL,
-            time_spent_sec = CAST(time_spent_sec + ((julianday(CURRENT_TIMESTAMP) - julianday(started_ts)) * 86400.0) as INTEGER)
+            time_spent_sec = time_spent_sec + ((julianday(CURRENT_TIMESTAMP) - julianday(started_ts)) * 86400.0)
         WHERE 
           rowid = ?;
         """
         self.cur.execute(sql, [task_id])
 
-    def get_time_spent_sec(self, task_id) -> int:
+    def get_time_spent_sec(self, task_id):
+        return self.get_time_spent_secs([task_id])[0]
+
+    def get_time_spent_secs(self, task_ids: Iterable):
         """
-        :param task_id:
-        :return:
+        :param task_ids: List of ids
+        :return: List of str
         """
-        sql = """
-        SELECT 
-          time_spent_sec
-        FROM tasks
-        WHERE
-          rowid = ?;
-        """
-        return self.cur.execute(sql, [task_id]).fetchone()[0]
+        sql = "SELECT CAST(ROUND(time_spent_sec) AS INTEGER) FROM tasks WHERE rowid = ?"
+        response = []
+        for task_id in task_ids:
+            time_spent_sec = self.cur.execute(sql, [task_id]).fetchone()
+            response.append(time_spent_sec[0])
+        return response
 
     def complete_task(self, task_id):
         sql = """
@@ -184,7 +186,7 @@ class Db:
         SET 
             state = 'CHECKED',
             completed_ts = CURRENT_TIMESTAMP,
-            time_spent_sec = CAST(time_spent_sec + ((julianday(CURRENT_TIMESTAMP) - julianday(started_ts)) * 86400.0) as INTEGER)
+            time_spent_sec = time_spent_sec + ((julianday(CURRENT_TIMESTAMP) - julianday(started_ts)) * 86400.0)
         WHERE 
           rowid = ?;
         """

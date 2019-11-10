@@ -1,5 +1,6 @@
 import os
 import unittest
+from time import sleep
 from unittest import mock
 
 from src.db.db import Db
@@ -170,6 +171,25 @@ class TestListFunctions(unittest.TestCase):
         actual = e.uncheck_task(*build_context("bar"))
         expected = "That task hasn't been completed."
         self.assertEqual(expected, actual)
+
+    def test_time_spent_sec(self):
+        e.new_list(*build_context("foo\nbar\nbaz"))
+        e.start_task(*build_context("foo"))
+        sleep(2)
+        e.stop_task(*build_context("foo"))
+        e.start_task(*build_context("bar"))
+        sleep(2)
+        e.check_task(*build_context("bar"))
+        e.start_task(*build_context("foo"))
+        sleep(2)
+        e.check_task(*build_context("foo"))
+        actual = e.task_time(*build_context(""))
+        expected = f"{OWNER_ID} times" \
+                   f"foo: 4s" \
+                   f"bar: 2s" \
+                   f"baz: 0s" \
+                   f"" \
+                   f"Total time: 6s"
 
 
 if __name__ == "__main__":

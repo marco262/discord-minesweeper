@@ -1,7 +1,6 @@
 from discord.ext.commands import Bot, Context
 
 from src.list_bot import list_engine
-from src.utils import ListBotError
 
 
 async def handle_list_function(context, func):
@@ -60,3 +59,7 @@ def load_list_functions(bot: Bot):
     @bot.command(name='uncheck')
     async def uncheck(context: Context):
         await handle_list_function(context, list_engine.uncheck_task)
+
+    @bot.command(name='tasktime')
+    async def task_time(context: Context):
+        await handle_list_function(context, list_engine.task_time)

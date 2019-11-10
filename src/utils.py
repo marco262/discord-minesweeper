@@ -1,4 +1,4 @@
-from typing import Union, List
+from typing import List
 
 from src.db.db import Db
 
@@ -36,6 +36,14 @@ def find_task_id_in_list(db: Db, task_ids: List[int], item: str) -> int:
             task_names = db.get_task_names(filtered_task_ids)
             raise ListBotError(f"Multiple items found matching \"{item}\":\n" + "\n".join(task_names))
         return filtered_task_ids[0]
+
+
+def pretty_task_time(secs: int) -> str:
+    if secs < 60:
+        return f"{secs}s"
+    if secs < 3600:
+        return f"{int(secs / 60)}m{secs % 60}s"
+    return f"{int(secs / 3600)}h{int(secs % 3600 / 60)}m{secs % 60}s"
 
 
 class ListBotError(Exception):

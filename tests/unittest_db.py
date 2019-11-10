@@ -1,9 +1,8 @@
-from datetime import datetime
 import os
 import unittest
+from datetime import datetime
 
 from src.db.db import Db
-
 
 OWNER_ID = -1
 OWNER_NAME1 = "FunctionalTestUser1"
@@ -145,7 +144,7 @@ class TestDatabase(unittest.TestCase):
         self.db.cur.execute(sql, [five_seconds_ago, rowid])
         self.assertEqual("STARTED", self.db.get_task_state(rowid))
         self.db.complete_task(rowid)
-        self.assertEqual("COMPLETED", self.db.get_task_state(rowid))
+        self.assertEqual("CHECKED", self.db.get_task_state(rowid))
         completed_time = ts_to_epoch(self.db.get_task_complete_time(rowid))
         # Accept any epoch that's within one second of the current epoch.
         self.assertAlmostEqual(now_epoch(), completed_time, delta=1)
@@ -169,7 +168,7 @@ class TestDatabase(unittest.TestCase):
         expected_result = [
             {'name': 'Spoon Spain',
              'owner_id': OWNER_ID,
-             'state': 'COMPLETED',
+             'state': 'CHECKED',
              'created_ts': current_time,
              'started_ts': current_time,
              'completed_ts': current_time,
@@ -190,6 +189,7 @@ class TestDatabase(unittest.TestCase):
              'time_spent_sec': 0}
         ]
         self.assertEqual(expected_result, self.db.get_tasks([rowid1, rowid2, rowid3]))
+        self.assertEqual(["CHECKED", "STARTED", "NOT_STARTED"], self.db.get_task_states([rowid1, rowid2, rowid3]))
 
     def test_add_new_list(self):
         self.db.new_list([1, 2, 3], OWNER_ID)
