@@ -48,3 +48,7 @@ def load_list_functions(bot: Bot):
     @bot.command(name='start')
     async def start(context: Context):
         await handle_list_function(context, list_engine.start_task)
+
+    @bot.command(name='stop')
+    async def stop(context: Context):
+        await handle_list_function(context, list_engine.stop_task)

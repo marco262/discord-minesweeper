@@ -114,12 +114,19 @@ class TestListFunctions(unittest.TestCase):
                    ":white_large_square: spam    (5)"
         self.assertEqual(expected, actual)
 
-    def test_start_task(self):
+    def test_start_and_stop_task(self):
         e.new_list(*build_context("foo\nbar\nbaz"))
         actual = e.start_task(*build_context("bar"))
         expected = f"{OWNER_NAME}'s list\n" \
                    ":white_large_square: foo    (1)\n" \
                    ":arrow_forward: bar    (2)\n" \
+                   ":white_large_square: baz    (3)"
+        self.assertEqual(expected, actual)
+        e.start_task(*build_context("foo"))
+        actual = e.stop_task(*build_context("bar"))
+        expected = f"{OWNER_NAME}'s list\n" \
+                   ":arrow_forward: foo    (1)\n" \
+                   ":white_large_square: bar    (2)\n" \
                    ":white_large_square: baz    (3)"
         self.assertEqual(expected, actual)
 
