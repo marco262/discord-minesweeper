@@ -5,8 +5,8 @@ import unittest
 from src.db.db import Db
 
 
-OWNER_ID = 1234567
-OWNER_ID2 = 7654321
+OWNER_ID = -1
+OWNER_ID2 = -2
 TIME_FORMAT = "%Y-%m-%d %H:%M:%S"
 
 

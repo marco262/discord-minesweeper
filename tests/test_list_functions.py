@@ -2,11 +2,11 @@ import os
 import unittest
 from unittest import mock
 
-from src.db import db
+from src.db.db import Db
 from src.list_bot import list_engine as e
 
-OWNER_ID = 1234567
-OWNER_NAME = "Marco262"
+OWNER_ID = -1
+OWNER_NAME = "FunctionalTestUser"
 
 
 def build_context(message_content="") -> mock.MagicMock:
@@ -23,21 +23,31 @@ class TestListFunctions(unittest.TestCase):
     def setUpClass(cls):
         # Change pwd to root folder, same as when main.py is run
         os.chdir("..")
-        db.TEST_MODE = True
 
     def setUp(self):
-        pass
+        with Db() as db:
+            db.wipe_owner_data(OWNER_ID)
 
     def tearDown(self):
         pass
 
     def test_new_list(self):
         c = build_context("~newlist\nfoo\nbar\nbaz")
-        expected = "Created a new list for Marco262\n" \
+        expected = f"Created a new list for {OWNER_NAME}\n" \
                    ":white_large_square: foo    (1)\n" \
                    ":white_large_square: bar    (2)\n" \
                    ":white_large_square: baz    (3)"
         self.assertEqual(expected, e.new_list(c))
+
+    def test_show_list(self):
+        c = build_context("~newlist\nfoo\nbar\nbaz")
+        e.new_list(c)
+        actual = e.show_list(build_context("~list"))
+        expected = f"{OWNER_NAME}'s list\n" \
+                   ":white_large_square: foo    (1)\n" \
+                   ":white_large_square: bar    (2)\n" \
+                   ":white_large_square: baz    (3)"
+        self.assertEqual(expected, actual)
 
 
 if __name__ == "__main__":

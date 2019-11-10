@@ -59,11 +59,6 @@ def create_tables(cur):
         name TEXT NOT NULL, 
         created_ts TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
-    CREATE TABLE IF NOT EXISTS owners (
-        id INTEGER PRIMARY KEY, 
-        name TEXT NOT NULL, 
-        created_ts TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    );
     CREATE TABLE IF NOT EXISTS tasks (
         name TEXT NOT NULL, 
         owner_id INTEGER NOT NULL,

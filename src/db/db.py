@@ -23,12 +23,18 @@ class Db:
                 if exc_type:
                     self.conn.rollback()
                     print(exc_type, exc_val, exc_tb, file=sys.stderr)
-                elif TEST_MODE:
-                    self.conn.rollback()
                 elif self.auto_commit:
                     self.conn.commit()
             finally:
                 self.conn.close()
+
+    def wipe_owner_data(self, owner_id):
+        sql = f"""
+        DELETE FROM owners WHERE id = {owner_id};
+        DELETE FROM tasks WHERE owner_id = {owner_id};
+        DELETE FROM lists WHERE owner_id = {owner_id};
+        """
+        self.cur.executescript(sql)
 
     def print_tables(self):
         import pandas
