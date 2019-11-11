@@ -4,7 +4,7 @@ from src.db.db import Db
 from src.utils import print_task_list, find_task_id_in_list, pretty_task_time
 
 
-def new_list(context, owner_id, owner_name, message):
+def newlist(context, owner_id, owner_name, message):
     if message == "":
         return "I need items to make a list. Put each separate item on a new line."
     task_names = message.split("\n")
@@ -22,7 +22,7 @@ def show_list(context, owner_id, owner_name, message):
     return f"{owner_name}'s list\n" + print_task_list(task_list)
 
 
-def add_tasks(context, owner_id, owner_name, message):
+def add(context, owner_id, owner_name, message):
     with Db() as db:
         new_row_ids = db.add_tasks(message.split("\n"), owner_id)
         task_list = db.get_list_items(owner_id)
@@ -31,7 +31,7 @@ def add_tasks(context, owner_id, owner_name, message):
     return f"{owner_name}'s list\n" + print_task_list(task_list)
 
 
-def remove_tasks(context, owner_id, owner_name, message):
+def remove(context, owner_id, owner_name, message):
     with Db() as db:
         task_ids = db.get_list_items(owner_id)
         for item in message.split("\n"):
@@ -71,7 +71,7 @@ def _reorder_task(owner_id: int, owner_name: str, item: str, position: int):
     return f"{owner_name}'s list\n" + print_task_list(task_list)
 
 
-def start_task(context, owner_id, owner_name, message):
+def start(context, owner_id, owner_name, message):
     with Db() as db:
         task_ids = db.get_list_items(owner_id)
         task_id = find_task_id_in_list(db, task_ids, message)
@@ -84,7 +84,7 @@ def start_task(context, owner_id, owner_name, message):
     return f"{owner_name}'s list\n" + print_task_list(task_list)
 
 
-def stop_task(context, owner_id, owner_name, message):
+def stop(context, owner_id, owner_name, message):
     with Db() as db:
         task_ids = db.get_list_items(owner_id)
         task_id = find_task_id_in_list(db, task_ids, message)
@@ -95,7 +95,7 @@ def stop_task(context, owner_id, owner_name, message):
     return f"{owner_name}'s list\n" + print_task_list(task_list)
 
 
-def check_task(context, owner_id, owner_name, message):
+def check(context, owner_id, owner_name, message):
     with Db() as db:
         task_ids = db.get_list_items(owner_id)
         task_id = find_task_id_in_list(db, task_ids, message)
@@ -106,7 +106,7 @@ def check_task(context, owner_id, owner_name, message):
     return f"{owner_name}'s list\n" + print_task_list(task_list)
 
 
-def uncheck_task(context, owner_id, owner_name, message):
+def uncheck(context, owner_id, owner_name, message):
     with Db() as db:
         task_ids = db.get_list_items(owner_id)
         task_id = find_task_id_in_list(db, task_ids, message)
@@ -117,7 +117,7 @@ def uncheck_task(context, owner_id, owner_name, message):
     return f"{owner_name}'s list\n" + print_task_list(task_list)
 
 
-def task_time(content, owner_id, owner_name, message):
+def tasktime(content, owner_id, owner_name, message):
     with Db() as db:
         task_ids = db.get_list_items(owner_id)
         tasks = db.get_tasks(task_ids)
@@ -128,7 +128,7 @@ def task_time(content, owner_id, owner_name, message):
     return output
 
 
-def clear_checked_tasks(context, owner_id, owner_name, message):
+def clear(context, owner_id, owner_name, message):
     with Db() as db:
         task_ids = db.get_list_items(owner_id)
         task_states = db.get_task_states(task_ids)

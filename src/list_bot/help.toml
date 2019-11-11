@@ -1,0 +1,17 @@
+# A file defining all the help and command info for the list bot functions
+
+[newlist]
+help = """
+Create a new todo list
+
+You can create a single list with a single task with `~newlist <task>` or multiple task by putting each task on its own line, like so:
+
+```~newlist
+<task1>
+<task2>
+<task3>```
+"""
+
+[list]
+func_name = "show_list"
+help = """Display your current todo list"""
