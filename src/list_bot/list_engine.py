@@ -51,10 +51,10 @@ def bottom(context, owner_id, owner_name, message):
 
 
 def move(context, owner_id, owner_name, message):
-    m = match(r'"(.*?)" (\d+)', message)
+    m = match(r'^(.*) (\d+)$', message)
     if not m:
-        return "Sorry, I don't understand. Accepted format: ~move \"<item>\" <position>"
-    return _reorder_task(owner_id, owner_name, m.group(1), int(m.group(2)))
+        return "Sorry, I don't understand. Accepted format: ~move <item> <position>"
+    return _reorder_task(owner_id, owner_name, m.group(1).strip('"'), int(m.group(2)))
 
 
 def _reorder_task(owner_id: int, owner_name: str, item: str, position: int):

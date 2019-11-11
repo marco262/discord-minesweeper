@@ -105,13 +105,37 @@ class TestListFunctions(unittest.TestCase):
         self.assertEqual(expected, actual)
 
     def test_reorder_move(self):
-        e.new_list(*build_context("foo\nbar\nbaz\nspam\nsplut"))
-        actual = e.move(*build_context('"splut" 3'))
+        e.new_list(*build_context('foo\nbar\nbaz\nspam\ntake my "splut" for 2 times'))
+        actual = e.move(*build_context('my "splut" for 2 3'))
         expected = f"{OWNER_NAME}'s list\n" \
                    ":white_large_square: foo    (1)\n" \
                    ":white_large_square: bar    (2)\n" \
-                   ":white_large_square: splut    (3)\n" \
+                   ':white_large_square: take my "splut" for 2 times    (3)\n' \
                    ":white_large_square: baz    (4)\n" \
+                   ":white_large_square: spam    (5)"
+        self.assertEqual(expected, actual)
+        actual = e.move(*build_context('"splut" 2'))
+        expected = f"{OWNER_NAME}'s list\n" \
+                   ":white_large_square: foo    (1)\n" \
+                   ':white_large_square: take my "splut" for 2 times    (2)\n' \
+                   ':white_large_square: bar    (3)\n' \
+                   ":white_large_square: baz    (4)\n" \
+                   ":white_large_square: spam    (5)"
+        self.assertEqual(expected, actual)
+        actual = e.move(*build_context('splut 4'))
+        expected = f"{OWNER_NAME}'s list\n" \
+                   ":white_large_square: foo    (1)\n" \
+                   ':white_large_square: bar    (2)\n' \
+                   ':white_large_square: baz    (3)\n' \
+                   ':white_large_square: take my "splut" for 2 times    (4)\n' \
+                   ":white_large_square: spam    (5)"
+        self.assertEqual(expected, actual)
+        actual = e.move(*build_context('"take" 1'))
+        expected = f"{OWNER_NAME}'s list\n" \
+                   ':white_large_square: take my "splut" for 2 times    (1)\n' \
+                   ':white_large_square: foo    (2)\n' \
+                   ':white_large_square: bar    (3)\n' \
+                   ':white_large_square: baz    (4)\n' \
                    ":white_large_square: spam    (5)"
         self.assertEqual(expected, actual)
 
