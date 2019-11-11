@@ -31,7 +31,7 @@ class ListFunctions(Cog):
         await self.handle_list_function(context, list_engine.add_tasks)
 
     @command(name='remove', help="Remove items from your list")
-    async def add(self, context: Context):
+    async def remove(self, context: Context):
         await self.handle_list_function(context, list_engine.remove_tasks)
 
     @command(name='top', help="Bump a task to the top of your list")
