@@ -77,6 +77,8 @@ def start_task(context, owner_id, owner_name, message):
         task_id = find_task_id_in_list(db, task_ids, message)
         if db.get_task_state(task_id) == "STARTED":
             return "That task is already started."
+        if "STARTED" in db.get_task_states(task_ids):
+            return "You can only have one started task at a time."
         db.start_task(task_id)
         task_list = db.get_tasks(db.get_list_items(owner_id))
     return f"{owner_name}'s list\n" + print_task_list(task_list)
@@ -97,7 +99,7 @@ def check_task(context, owner_id, owner_name, message):
     with Db() as db:
         task_ids = db.get_list_items(owner_id)
         task_id = find_task_id_in_list(db, task_ids, message)
-        if db.get_task_state(task_id) != "STARTED":
+        if db.get_task_state(task_id) == "CHECKED":
             return "That task hasn't been started."
         db.complete_task(task_id)
         task_list = db.get_tasks(db.get_list_items(owner_id))

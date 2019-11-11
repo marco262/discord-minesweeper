@@ -123,12 +123,18 @@ class TestListFunctions(unittest.TestCase):
                    ":arrow_forward: bar    (2)\n" \
                    ":white_large_square: baz    (3)"
         self.assertEqual(expected, actual)
-        e.start_task(*build_context("foo"))
         actual = e.stop_task(*build_context("bar"))
         expected = f"{OWNER_NAME}'s list\n" \
-                   ":arrow_forward: foo    (1)\n" \
+                   ":white_large_square: foo    (1)\n" \
                    ":white_large_square: bar    (2)\n" \
                    ":white_large_square: baz    (3)"
+        self.assertEqual(expected, actual)
+
+    def test_start_two_tasks(self):
+        e.new_list(*build_context("foo\nbar\nbaz"))
+        e.start_task(*build_context("foo"))
+        actual = e.start_task(*build_context("bar"))
+        expected = "You can only have one started task at a time."
         self.assertEqual(expected, actual)
 
     def test_already_started(self):
@@ -163,7 +169,10 @@ class TestListFunctions(unittest.TestCase):
     def test_check_task_not_started(self):
         e.new_list(*build_context("foo\nbar\nbaz"))
         actual = e.check_task(*build_context("bar"))
-        expected = "That task hasn't been started."
+        expected = f"{OWNER_NAME}'s list\n" \
+                   ":white_large_square: foo    (1)\n" \
+                   ":white_check_mark: bar    (2)\n" \
+                   ":white_large_square: baz    (3)"
         self.assertEqual(expected, actual)
 
     def test_uncheck_task_not_completed(self):
