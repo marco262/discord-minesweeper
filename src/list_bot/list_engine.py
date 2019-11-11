@@ -5,6 +5,8 @@ from src.utils import print_task_list, find_task_id_in_list, pretty_task_time
 
 
 def new_list(context, owner_id, owner_name, message):
+    if message == "":
+        return "I need items to make a list. Put each separate item on a new line."
     task_names = message.split("\n")
     with Db() as db:
         db.add_owner(owner_id, owner_name)
