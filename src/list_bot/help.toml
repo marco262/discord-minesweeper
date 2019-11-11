@@ -4,14 +4,91 @@
 help = """
 Create a new todo list
 
-You can create a single list with a single task with `~newlist <task>` or multiple task by putting each task on its own line, like so:
+You can create a single list with a single task with `~newlist <task>` or multiple tasks by putting each task on its own line, like so:
 
-```~newlist
+~newlist
 <task1>
 <task2>
-<task3>```
+<task3>
 """
 
 [list]
 func_name = "show_list"
-help = """Display your current todo list"""
+help = "Display your current todo list"
+
+[add]
+help = """
+Add tasks to your todo list
+
+You can add a single task with `~add <task>` or multiple tasks by putting each task on its own line, like so:
+
+~add
+<task1>
+<task2>
+<task3>
+"""
+
+[remove]
+help = """
+Remove items from your list
+
+You can remove a single task with `~remove <item>` or multiple tasks by putting each task on its own line, like so:
+
+~remove
+<item>
+<item>
+<item>
+
+<item> can be either part of a task name, or the task's position in your todo list.
+"""
+
+[top]
+help = """
+Bump a task to the top of your list
+
+Syntax: ~top <item>
+
+<item> can be either part of a task name, or the task's position in your todo list.
+"""
+
+[bottom]
+help = """
+Bump a task to the bottom of your list
+
+Syntax: ~bottom <item>
+
+<item> can be either part of a task name, or the task's position in your todo list.
+"""
+
+[move]
+help = """
+Move a task to a new place in your list
+
+Syntax: ~move <item> <position>
+
+<item> can be either part of a task name, or the task's position in your todo list.
+"""
+
+[start]
+help = """
+Start a task
+
+Syntax: ~start <item>
+
+This command will mark a task as started, changing its icon from a white square to a blue arrow. List Bot will also start tracking the time spent on that task.
+
+Can only be performed on unstarted and completed tasks. Only one task can be started at a time.
+
+<item> can be either part of a task name, or the task's position in your todo list.
+"""
+
+[stop]
+help = """
+Stop a task
+
+Syntax: ~stop <item>
+
+This command will stop a task, changing its icon from a blue arrow to a white square. The time since that task was started will be tracked and added to the total time spent on that task.
+
+<item> can be either part of a task name, or the task's position in your todo list.
+"""

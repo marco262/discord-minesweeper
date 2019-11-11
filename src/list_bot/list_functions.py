@@ -49,34 +49,6 @@ class ListFunctions(Cog):
             output = e.args
         await context.send(output)
 
-    @command(name='add', help="Add items to your list")
-    async def add(self, context: Context):
-        await self.handle_list_function(context, list_engine.add)
-
-    @command(name='remove', help="Remove items from your list")
-    async def remove(self, context: Context):
-        await self.handle_list_function(context, list_engine.remove)
-
-    @command(name='top', help="Bump a task to the top of your list")
-    async def top(self, context: Context):
-        await self.handle_list_function(context, list_engine.top)
-
-    @command(name='bottom', help="Bump a task to the bottom of your list")
-    async def bottom(self, context: Context):
-        await self.handle_list_function(context, list_engine.bottom)
-
-    @command(name='move', help="Move a task to a new place in your list")
-    async def move(self, context: Context):
-        await self.handle_list_function(context, list_engine.move)
-
-    @command(name='start', help="Start a task")
-    async def start(self, context: Context):
-        await self.handle_list_function(context, list_engine.start)
-
-    @command(name='stop', help="Stop a task")
-    async def stop(self, context: Context):
-        await self.handle_list_function(context, list_engine.stop)
-
     @command(name='check', help="Check a task")
     async def check(self, context: Context):
         await self.handle_list_function(context, list_engine.check)
