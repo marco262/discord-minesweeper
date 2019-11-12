@@ -20,6 +20,14 @@ def print_task_list(task_list):
     return "\n".join(output)
 
 
+def get_list_items(db, owner_id, owner_name):
+    task_list = db.get_list_items(owner_id)
+    if task_list is None:
+        raise ListBotError(f"I don't have a list assigned to {owner_name}. "
+                           f"Check ~help newlist to see how to create your own todo list.")
+    return task_list
+
+
 def find_task_id_in_list(db: Db, task_ids: List[int], item: str) -> int:
     """
     :param db:

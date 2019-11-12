@@ -191,6 +191,9 @@ class TestDatabase(unittest.TestCase):
         self.assertEqual(expected_result, self.db.get_tasks([rowid1, rowid2, rowid3]))
         self.assertEqual(["CHECKED", "STARTED", "NOT_STARTED"], self.db.get_task_states([rowid1, rowid2, rowid3]))
 
+    def test_get_list_items_no_list(self):
+        self.assertIsNone(self.db.get_list_items(OWNER_ID))
+
     def test_add_new_list(self):
         self.db.new_list([1, 2, 3], OWNER_ID)
         current_time = now_ts()

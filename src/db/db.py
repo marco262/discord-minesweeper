@@ -1,6 +1,6 @@
 import sqlite3
 from json import dumps, loads
-from typing import Iterable, List
+from typing import Iterable, List, Optional
 
 TEST_MODE = False
 
@@ -251,9 +251,12 @@ class Db:
         response[0] = loads(response[0])
         return response
 
-    def get_list_items(self, owner_id) -> List[int]:
+    def get_list_items(self, owner_id) -> Optional[List[int]]:
         sql = "SELECT items FROM lists WHERE owner_id = ?"
-        return loads(self.cur.execute(sql, [owner_id]).fetchone()[0])
+        response = self.cur.execute(sql, [owner_id]).fetchone()
+        if response is None:
+            return None
+        return loads(response[0])
 
     def update_list_items(self, list_items, owner_id):
         sql = """

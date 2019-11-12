@@ -47,6 +47,12 @@ class TestListFunctions(unittest.TestCase):
                    ":white_large_square: baz    (3)"
         self.assertEqual(expected, actual)
 
+    def test_show_list_no_user(self):
+        expected = "I don't have a list assigned to FunctionalTestUser. " \
+                   "Check ~help newlist to see how to create your own todo list."
+        with self.assertRaisesRegex(ListBotError, expected):
+            e.show_list(*build_context())
+
     def test_add_tasks(self):
         e.new_list(*build_context("foo"))
         actual = e.add_tasks(*build_context("bar\nbaz"))
