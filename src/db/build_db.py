@@ -81,9 +81,16 @@ def create_tables(cur):
     set_version(cur, 1)
 
 
+def show_tables(cur):
+    sql = "SELECT sql FROM sqlite_master WHERE type ='table' AND name NOT LIKE 'sqlite_%';"
+    for row in cur.execute(sql).fetchall():
+        print(row[0])
+
+
 if __name__ == "__main__":
     db, cur = open_db()
     # drop_tables(cur)
     create_tables(cur)
+    # show_tables(cur)
     db.commit()
     db.close()

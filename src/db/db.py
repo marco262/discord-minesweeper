@@ -159,7 +159,8 @@ class Db:
         SET 
             state = 'NOT_STARTED',
             started_ts = NULL,
-            time_spent_sec = time_spent_sec + ((julianday(CURRENT_TIMESTAMP) - julianday(started_ts)) * 86400.0)
+            time_spent_sec = time_spent_sec + 
+                COALESCE((julianday(CURRENT_TIMESTAMP) - julianday(started_ts)) * 86400.0, 0)
         WHERE 
           rowid = ?;
         """
@@ -186,7 +187,8 @@ class Db:
         SET 
             state = 'CHECKED',
             completed_ts = CURRENT_TIMESTAMP,
-            time_spent_sec = time_spent_sec + ((julianday(CURRENT_TIMESTAMP) - julianday(started_ts)) * 86400.0)
+            time_spent_sec = time_spent_sec + 
+                COALESCE((julianday(CURRENT_TIMESTAMP) - julianday(started_ts)) * 86400.0, 0)
         WHERE 
           rowid = ?;
         """
@@ -269,3 +271,8 @@ class Db:
         """
         json_list = dumps(list_items)
         self.cur.execute(sql, [json_list, owner_id])
+
+
+if __name__ == "__main__":
+    with Db(filename=r"..\..\database_files\list-keeper.db") as db:
+        db.print_tables()

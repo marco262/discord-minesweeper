@@ -150,6 +150,14 @@ class TestDatabase(unittest.TestCase):
         self.assertAlmostEqual(now_epoch(), completed_time, delta=1)
         self.assertAlmostEqual(5, self.db.get_time_spent_sec(rowid), delta=1)
 
+    def test_complete_task_not_started(self):
+        rowid = self.db.add_task("Spoon Spain", OWNER_ID)
+        five_seconds_ago = epoch_to_ts(now_epoch() - 5)
+        sql = "UPDATE tasks SET started_ts = ? WHERE rowid = ?;"
+        self.db.cur.execute(sql, [five_seconds_ago, rowid])
+        self.db.complete_task(rowid)
+        self.assertEqual(5, self.db.get_time_spent_sec(rowid))
+
     def test_uncomplete_task(self):
         rowid = self.db.add_task("Spoon Spain", OWNER_ID)
         self.db.complete_task(rowid)
