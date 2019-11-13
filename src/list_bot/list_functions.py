@@ -1,3 +1,5 @@
+import traceback
+
 from discord.ext.commands import Bot, Context, Cog, command
 
 from src.list_bot import list_engine
@@ -15,6 +17,7 @@ class ListFunctions(Cog):
         try:
             output = func(context, context.author.id, context.author.name, message)
         except Exception as e:
+            traceback.print_exc()
             output = e.args
         await context.send(output)
 
