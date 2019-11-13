@@ -8,7 +8,7 @@ class ListFunctions(Cog):
     
     def __init__(self, bot: Bot):
         self.bot = bot
-        self.init_help()
+        self.help = self.init_help()
         self.load_commands()
 
     def init_help(self):
@@ -18,11 +18,12 @@ class ListFunctions(Cog):
         :return:
         """
         with open("src/list_bot/help.toml") as f:
-            self.help = toml.loads(f.read())
-        for name, options in self.help.items():
+            help_data = toml.loads(f.read())
+        for name, options in help_data.items():
             if "func_name" not in options:
                 options["func_name"] = name
             options["help"] = options["help"].strip()
+        return help_data
 
     def load_commands(self):
         """
