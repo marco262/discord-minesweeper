@@ -81,6 +81,15 @@ def create_tables(cur):
     set_version(cur, 1)
 
 
+def fix_time_spent_sec(cur):
+    print("Fixing null time_spent_sec...")
+
+    sql = "UPDATE tasks SET time_spent_sec = 0 WHERE time_spent_sec IS NULL;"
+    cur.execute(sql)
+
+    set_version(cur, 2)
+
+
 def show_tables(cur):
     sql = "SELECT sql FROM sqlite_master WHERE type ='table' AND name NOT LIKE 'sqlite_%';"
     for row in cur.execute(sql).fetchall():
@@ -91,6 +100,8 @@ if __name__ == "__main__":
     db, cur = open_db()
     # drop_tables(cur)
     create_tables(cur)
+    fix_time_spent_sec(cur)
     # show_tables(cur)
     db.commit()
+    # db.rollback()
     db.close()
