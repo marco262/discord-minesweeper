@@ -205,10 +205,10 @@ class TestListFunctions(unittest.TestCase):
                    ":white_large_square: baz    (3)"
         self.assertEqual(expected, actual)
 
-    def test_check_all(self):
+    def test_check_list(self):
         e.new_list(*build_context("foo\nbar\nbaz\nfweep\nslurp"))
         e.start_task(*build_context("foo"))
-        actual = e.check_all(*build_context("1 2 4"))
+        actual = e.check_list(*build_context("1 2 4"))
         expected = f"{OWNER_NAME}'s list\n" \
                    ":white_check_mark: foo    (1)\n" \
                    ":white_check_mark: bar    (2)\n" \
@@ -217,24 +217,37 @@ class TestListFunctions(unittest.TestCase):
                    ":white_large_square: slurp    (5)"
         self.assertEqual(expected, actual)
 
-    def test_check_all_invalid_entry(self):
+    def test_check_list_invalid_entry(self):
         e.new_list(*build_context("foo\nbar\nbaz"))
         e.start_task(*build_context("foo"))
-        actual = e.check_all(*build_context("1 2 fweep"))
+        actual = e.check_list(*build_context("1 2 fweep"))
         expected = "All arguments must be positions of tasks, not names."
         self.assertEqual(expected, actual)
 
-    def test_check_all_item_not_in_list(self):
+    def test_check_list_item_not_in_list(self):
         e.new_list(*build_context("foo\nbar\nbaz"))
         e.start_task(*build_context("foo"))
         with self.assertRaisesRegex(ListBotError, "4 is not a valid list position."):
-            e.check_all(*build_context("1 2 4"))
+            e.check_list(*build_context("1 2 4"))
 
-    def test_check_all_already_finished(self):
+    def test_check_list_already_finished(self):
         e.new_list(*build_context("foo\nbar\nbaz"))
         e.check_task(*build_context("foo"))
-        actual = e.check_all(*build_context("1 2"))
+        actual = e.check_list(*build_context("1 2"))
         expected = "Task 1 has already been finished."
+        self.assertEqual(expected, actual)
+
+    def test_check_all(self):
+        e.new_list(*build_context("foo\nbar\nbaz\nfweep\nslurp"))
+        e.start_task(*build_context("foo"))
+        e.check_task(*build_context("baz"))
+        actual = e.check_all(*build_context(""))
+        expected = f"{OWNER_NAME}'s list\n" \
+                   ":white_check_mark: foo    (1)\n" \
+                   ":white_check_mark: bar    (2)\n" \
+                   ":white_check_mark: baz    (3)\n" \
+                   ":white_check_mark: fweep    (4)\n" \
+                   ":white_check_mark: slurp    (5)"
         self.assertEqual(expected, actual)
 
     def test_uncheck_task_not_completed(self):
@@ -243,6 +256,7 @@ class TestListFunctions(unittest.TestCase):
         expected = "That task hasn't been completed."
         self.assertEqual(expected, actual)
 
+    @unittest.skip("test_time_spent_sec: Takes time to finish. Only test as needed.")
     def test_time_spent_sec(self):
         e.new_list(*build_context("foo\nbar\nbaz"))
         e.start_task(*build_context("foo"))

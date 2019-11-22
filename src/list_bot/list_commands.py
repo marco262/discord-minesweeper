@@ -62,7 +62,11 @@ class ListCommands(Cog):
     async def check(self, context: Context):
         await self.handle_command(context, list_functions.check_task)
 
-    @command(name='checkall', help="Check a list of tasks numbers")
+    @command(name='checklist', help="Check a list of task numbers")
+    async def checklist(self, context: Context):
+        await self.handle_command(context, list_functions.check_list)
+
+    @command(name='checkall', help="Check all remaining tasks on your list")
     async def checkall(self, context: Context):
         await self.handle_command(context, list_functions.check_all)
 

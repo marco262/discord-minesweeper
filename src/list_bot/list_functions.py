@@ -106,7 +106,7 @@ def check_task(context, owner_id, owner_name, message):
     return f"{owner_name}'s list\n" + print_task_list(task_list)
 
 
-def check_all(context, owner_id, owner_name, message):
+def check_list(context, owner_id, owner_name, message):
     with Db() as db:
         list_items = get_list_items(db, owner_id, owner_name)
         tasks = message.split(" ")
@@ -120,6 +120,16 @@ def check_all(context, owner_id, owner_name, message):
             task_ids.append(task_id)
         for task_id in task_ids:
             db.complete_task(task_id)
+        task_list = db.get_tasks(get_list_items(db, owner_id, owner_name))
+    return f"{owner_name}'s list\n" + print_task_list(task_list)
+
+
+def check_all(context, owner_id, owner_name, message):
+    with Db() as db:
+        task_ids = get_list_items(db, owner_id, owner_name)
+        for task_id in task_ids:
+            if db.get_task_state(task_id) != "CHECKED":
+                db.complete_task(task_id)
         task_list = db.get_tasks(get_list_items(db, owner_id, owner_name))
     return f"{owner_name}'s list\n" + print_task_list(task_list)
 
