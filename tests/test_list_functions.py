@@ -4,7 +4,7 @@ from time import sleep
 from unittest import mock
 
 from src.db.db import Db
-from src.list_bot import list_engine as e
+from src.list_bot import list_functions as e
 from src.utils import ListBotError
 
 OWNER_ID = -1

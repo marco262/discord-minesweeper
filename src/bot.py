@@ -3,7 +3,7 @@ from json import loads
 import discord
 from discord.ext.commands import Bot
 
-from src.list_bot.list_functions import ListFunctions
+from src.list_bot.list_commands import ListCommands
 from src.minesweeper.minesweeper import new_game
 
 VERSION = (0, 0, 1)
@@ -18,8 +18,8 @@ def init_bot():
     return Bot(command_prefix="~")
 
 
-def load_functions(bot):
-    bot.add_cog(ListFunctions(bot))
+def load_commands(bot):
+    bot.add_cog(ListCommands(bot))
 
     @bot.event
     async def on_ready():
@@ -52,5 +52,5 @@ def load_functions(bot):
 
 def run_bot():
     bot = init_bot()
-    load_functions(bot)
+    load_commands(bot)
     bot.run(TOKEN)

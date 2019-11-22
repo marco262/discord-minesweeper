@@ -1,78 +1,160 @@
-import traceback
+from re import match
 
-from discord.ext.commands import Bot, Context, Cog, command
+from src.db.db import Db
+from src.utils import print_task_list, find_task_id_in_list, pretty_task_time, get_list_items
 
-from src.list_bot import list_engine
+
+def new_list(context, owner_id, owner_name, message):
+    if message == "":
+        return "I need items to make a list. Put each separate item on a new line."
+    task_names = message.split("\n")
+    with Db() as db:
+        db.add_owner(owner_id, owner_name)
+        task_ids = db.add_tasks(task_names, owner_id)
+        db.new_list(task_ids, owner_id)
+        task_list = db.get_tasks(task_ids)
+    return f"Created a new list for {owner_name}\n" + print_task_list(task_list)
 
 
-class ListFunctions(Cog):
-    
-    def __init__(self, bot):
-        self.bot = bot
+def show_list(context, owner_id, owner_name, message):
+    with Db() as db:
+        task_list = db.get_tasks(get_list_items(db, owner_id, owner_name))
+    return f"{owner_name}'s list\n" + print_task_list(task_list)
 
-    async def handle_list_function(self, context, func):
-        cmd = context.prefix + context.command.name
-        # Get everything after the command
-        message = context.message.content[len(cmd):].strip()
-        try:
-            output = func(context, context.author.id, context.author.name, message)
-        except Exception as e:
-            traceback.print_exc()
-            output = e.args
-        await context.send(output)
 
-    @command(name='newlist', help="Create a new list")
-    async def new_list(self, context: Context):
-        await self.handle_list_function(context, list_engine.new_list)
+def add_tasks(context, owner_id, owner_name, message):
+    with Db() as db:
+        task_list = get_list_items(db, owner_id, owner_name)
+        new_row_ids = db.add_tasks(message.split("\n"), owner_id)
+        db.update_list_items(task_list + new_row_ids, owner_id)
+        task_list = db.get_tasks(get_list_items(db, owner_id, owner_name))
+    return f"{owner_name}'s list\n" + print_task_list(task_list)
 
-    @command(name='list', help="Display your current list")
-    async def show_list(self, context: Context):
-        await self.handle_list_function(context, list_engine.show_list)
 
-    @command(name='add', help="Add items to your list")
-    async def add(self, context: Context):
-        await self.handle_list_function(context, list_engine.add_tasks)
+def remove_tasks(context, owner_id, owner_name, message):
+    with Db() as db:
+        task_ids = get_list_items(db, owner_id, owner_name)
+        for item in message.split("\n"):
+            task_id = find_task_id_in_list(db, task_ids, item)
+            task_ids.remove(task_id)
+        db.update_list_items(task_ids, owner_id)
+        task_list = db.get_tasks(get_list_items(db, owner_id, owner_name))
+    return f"{owner_name}'s list\n" + print_task_list(task_list)
 
-    @command(name='remove', help="Remove items from your list")
-    async def remove(self, context: Context):
-        await self.handle_list_function(context, list_engine.remove_tasks)
 
-    @command(name='top', help="Bump a task to the top of your list")
-    async def top(self, context: Context):
-        await self.handle_list_function(context, list_engine.top)
+def top(context, owner_id, owner_name, message):
+    return _reorder_task(owner_id, owner_name, message, 1)
 
-    @command(name='bottom', help="Bump a task to the bottom of your list")
-    async def bottom(self, context: Context):
-        await self.handle_list_function(context, list_engine.bottom)
 
-    @command(name='move', help="Move a task to a new place in your list")
-    async def move(self, context: Context):
-        await self.handle_list_function(context, list_engine.move)
+def bottom(context, owner_id, owner_name, message):
+    return _reorder_task(owner_id, owner_name, message, -1)
 
-    @command(name='start', help="Start a task")
-    async def start(self, context: Context):
-        await self.handle_list_function(context, list_engine.start_task)
 
-    @command(name='stop', help="Stop a task")
-    async def stop(self, context: Context):
-        await self.handle_list_function(context, list_engine.stop_task)
+def move(context, owner_id, owner_name, message):
+    m = match(r'^(.*) (\d+)$', message)
+    if not m:
+        return "Sorry, I don't understand. Accepted format: ~move <item> <position>"
+    return _reorder_task(owner_id, owner_name, m.group(1).strip('"'), int(m.group(2)))
 
-    @command(name='check', help="Check a task")
-    async def check(self, context: Context):
-        await self.handle_list_function(context, list_engine.check_task)
 
-    @command(name='checkall', help="Check a list of tasks numbers")
-    async def check(self, context: Context):
-        await self.handle_list_function(context, list_engine.check_all)
+def _reorder_task(owner_id: int, owner_name: str, item: str, position: int):
+    with Db() as db:
+        task_ids = get_list_items(db, owner_id, owner_name)
+        task_id = find_task_id_in_list(db, task_ids, item)
+        task_ids.remove(task_id)
+        if position == -1:
+            task_ids.append(task_id)
+        else:
+            task_ids.insert(position - 1, task_id)
+        db.update_list_items(task_ids, owner_id)
+        task_list = db.get_tasks(get_list_items(db, owner_id, owner_name))
+    return f"{owner_name}'s list\n" + print_task_list(task_list)
 
-    @command(name='uncheck', help="Uncheck a task")
-    async def uncheck(self, context: Context):
-        await self.handle_list_function(context, list_engine.uncheck_task)
 
-    @command(name='tasktime', help="Display the times spent on all tasks")
-    async def task_time(self, context: Context):
-        await self.handle_list_function(context, list_engine.task_time)
+def start_task(context, owner_id, owner_name, message):
+    with Db() as db:
+        task_ids = get_list_items(db, owner_id, owner_name)
+        task_id = find_task_id_in_list(db, task_ids, message)
+        if db.get_task_state(task_id) == "STARTED":
+            return "That task is already started."
+        if "STARTED" in db.get_task_states(task_ids):
+            return "You can only have one started task at a time."
+        db.start_task(task_id)
+        task_list = db.get_tasks(get_list_items(db, owner_id, owner_name))
+    return f"{owner_name}'s list\n" + print_task_list(task_list)
 
-    @command(name='clear', help="Clear all checked tasks")
-    async def clear(self, context: Context):
-        await self.handle_list_function(context, list_engine.clear_checked_tasks)
+
+def stop_task(context, owner_id, owner_name, message):
+    with Db() as db:
+        task_ids = get_list_items(db, owner_id, owner_name)
+        task_id = find_task_id_in_list(db, task_ids, message)
+        if db.get_task_state(task_id) != "STARTED":
+            return "That task hasn't been started."
+        db.stop_task(task_id)
+        task_list = db.get_tasks(get_list_items(db, owner_id, owner_name))
+    return f"{owner_name}'s list\n" + print_task_list(task_list)
+
+
+def check_task(context, owner_id, owner_name, message):
+    with Db() as db:
+        task_ids = get_list_items(db, owner_id, owner_name)
+        task_id = find_task_id_in_list(db, task_ids, message)
+        if db.get_task_state(task_id) == "CHECKED":
+            return "That task hasn't been started."
+        db.complete_task(task_id)
+        task_list = db.get_tasks(get_list_items(db, owner_id, owner_name))
+    return f"{owner_name}'s list\n" + print_task_list(task_list)
+
+
+def check_all(context, owner_id, owner_name, message):
+    with Db() as db:
+        list_items = get_list_items(db, owner_id, owner_name)
+        tasks = message.split(" ")
+        if not all([s.isdigit() for s in tasks]):
+            return "All arguments must be positions of tasks, not names."
+        task_ids = []
+        for task in tasks:
+            task_id = find_task_id_in_list(db, list_items, task)
+            if db.get_task_state(task_id) == "CHECKED":
+                return f"Task {task} has already been finished."
+            task_ids.append(task_id)
+        for task_id in task_ids:
+            db.complete_task(task_id)
+        task_list = db.get_tasks(get_list_items(db, owner_id, owner_name))
+    return f"{owner_name}'s list\n" + print_task_list(task_list)
+
+
+def uncheck_task(context, owner_id, owner_name, message):
+    with Db() as db:
+        task_ids = get_list_items(db, owner_id, owner_name)
+        task_id = find_task_id_in_list(db, task_ids, message)
+        if db.get_task_state(task_id) != "CHECKED":
+            return "That task hasn't been completed."
+        db.uncomplete_task(task_id)
+        task_list = db.get_tasks(get_list_items(db, owner_id, owner_name))
+    return f"{owner_name}'s list\n" + print_task_list(task_list)
+
+
+def task_time(content, owner_id, owner_name, message):
+    with Db() as db:
+        task_ids = get_list_items(db, owner_id, owner_name)
+        tasks = db.get_tasks(task_ids)
+        output = f"{owner_name} times\n"
+        for t in tasks:
+            output += f"{t['name']}: {pretty_task_time(t['time_spent_sec'])}\n"
+        output += f"\nTotal time: {pretty_task_time(sum([t['time_spent_sec'] for t in tasks]))}"
+    return output
+
+
+def clear_checked_tasks(context, owner_id, owner_name, message):
+    with Db() as db:
+        task_ids = get_list_items(db, owner_id, owner_name)
+        task_states = db.get_task_states(task_ids)
+        tasks = zip(task_ids, task_states)
+        unchecked_tasks = []
+        for task_id, state in tasks:
+            if state != "CHECKED":
+                unchecked_tasks.append(task_id)
+        db.update_list_items(unchecked_tasks, owner_id)
+        task_list = db.get_tasks(get_list_items(db, owner_id, owner_name))
+    return f"{owner_name}'s list\n" + print_task_list(task_list)
