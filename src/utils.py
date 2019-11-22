@@ -35,7 +35,10 @@ def find_task_id_in_list(db: Db, task_ids: List[int], item: str) -> int:
     :return:
     """
     if item.isdigit():
-        return task_ids[int(item) - 1]
+        try:
+            return task_ids[int(item) - 1]
+        except IndexError:
+            raise ListBotError(f"{item} is not a valid list position.")
     else:
         filtered_task_ids = db.filter_task_ids_by_name(task_ids, item)
         if len(filtered_task_ids) == 0:

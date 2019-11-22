@@ -106,6 +106,24 @@ def check_task(context, owner_id, owner_name, message):
     return f"{owner_name}'s list\n" + print_task_list(task_list)
 
 
+def check_all(context, owner_id, owner_name, message):
+    with Db() as db:
+        list_items = get_list_items(db, owner_id, owner_name)
+        tasks = message.split(" ")
+        if not all([s.isdigit() for s in tasks]):
+            return "All arguments must be positions of tasks, not names."
+        task_ids = []
+        for task in tasks:
+            task_id = find_task_id_in_list(db, list_items, task)
+            if db.get_task_state(task_id) == "CHECKED":
+                return f"Task {task} has already been finished."
+            task_ids.append(task_id)
+        for task_id in task_ids:
+            db.complete_task(task_id)
+        task_list = db.get_tasks(get_list_items(db, owner_id, owner_name))
+    return f"{owner_name}'s list\n" + print_task_list(task_list)
+
+
 def uncheck_task(context, owner_id, owner_name, message):
     with Db() as db:
         task_ids = get_list_items(db, owner_id, owner_name)
