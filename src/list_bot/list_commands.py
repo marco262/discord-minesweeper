@@ -11,6 +11,7 @@ class ListCommands(Cog):
     
     def __init__(self, bot):
         self.bot = bot
+        list_functions.check_version()
 
     @staticmethod
     async def handle_command(context, func) -> Message:

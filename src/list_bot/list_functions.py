@@ -7,6 +7,11 @@ from src.db.db import Db
 from src.utils import print_task_list, find_task_id_in_list, pretty_task_time, get_list_items, get_display_mode
 
 
+def check_version():
+    with Db() as db:
+        db.check_version()
+
+
 def new_list(context, owner: Message.author, message):
     if message == "":
         return "I need items to make a list. Put each separate item on a new line."
