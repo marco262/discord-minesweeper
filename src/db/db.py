@@ -274,17 +274,15 @@ class Db:
         self.cur.execute(sql, [json_list, owner_id])
 
 
-def check_db_version():
-    with Db() as db_obj:
-        sql = "SELECT version FROM version;"
-        version = db_obj.cur.execute(sql).fetchone()[0]
-    if not version == VERSION_NEEDED:
-        raise ValueError(f"Incorrect DB version: {version} != {VERSION_NEEDED}")
-
-
-check_db_version()
-
-
 if __name__ == "__main__":
     with Db(filename=r"..\..\database_files\list-keeper.db") as db:
         db.print_tables()
+else:
+    def check_db_version():
+        with Db() as db_obj:
+            sql = "SELECT version FROM version;"
+            version = db_obj.cur.execute(sql).fetchone()[0]
+        if not version == VERSION_NEEDED:
+            raise ValueError(f"Incorrect DB version: {version} != {VERSION_NEEDED}")
+
+    check_db_version()

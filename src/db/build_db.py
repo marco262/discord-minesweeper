@@ -82,12 +82,34 @@ def create_tables(cur):
 
 
 def fix_time_spent_sec(cur):
+    if get_version(cur) >= 2:
+        print("Skipping fixing time_spent_sec...")
+        return
+
     print("Fixing null time_spent_sec...")
 
     sql = "UPDATE tasks SET time_spent_sec = 0 WHERE time_spent_sec IS NULL;"
     cur.execute(sql)
 
     set_version(cur, 2)
+
+
+def add_edit_message_tracking(cur):
+    if get_version(cur) >= 3:
+        print("Skipping creating tables...")
+        return
+
+    print("Adding columns in owners table to track sent messages for each user...")
+
+    sql = """
+    ALTER TABLE owners 
+        ADD display_mode TEXT DEFAULT 'EDIT';
+    ALTER TABLE lists
+        ADD last_messages TEXT DEFAULT '{}';
+    """
+    cur.executescript(sql)
+
+    set_version(cur, 3)
 
 
 def show_tables(cur):
@@ -98,9 +120,9 @@ def show_tables(cur):
 
 if __name__ == "__main__":
     db, cur = open_db()
-    # drop_tables(cur)
     create_tables(cur)
     fix_time_spent_sec(cur)
+    add_edit_message_tracking(cur)
     # show_tables(cur)
     db.commit()
     # db.rollback()
