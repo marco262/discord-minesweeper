@@ -10,12 +10,13 @@ VERSION = (0, 0, 1)
 
 with open("conf/credentials.json") as f:
     json = loads(f.read())
+    PREFIX = json["prefix"]
     TOKEN = json["token"]
     MASTER_ID = json["master_id"]
 
 
 def init_bot():
-    return Bot(command_prefix="~")
+    return Bot(command_prefix=PREFIX)
 
 
 def load_commands(bot):
