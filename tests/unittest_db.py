@@ -74,6 +74,21 @@ class TestDatabase(unittest.TestCase):
         self.assertEqual(1, self.db.cur.execute(sql, [OWNER_NAME1]).fetchone()[0])
         self.assertEqual(0, self.db.cur.execute(sql, [OWNER_NAME2]).fetchone()[0])
 
+    def test_get_display_mode(self):
+        self.db.add_owner(OWNER_ID1, OWNER_NAME1)
+        self.assertEqual("EDIT", self.db.get_display_mode(OWNER_ID1))
+        self.db.set_display_mode(OWNER_ID1, "POST")
+        self.assertEqual("POST", self.db.get_display_mode(OWNER_ID1))
+        with self.assertRaisesRegex(ValueError, r"^BAD_VALUE is not a valid display mode. Valid values are "
+                                                r"\['POST', 'EDIT', 'UPDATE'\]$"):
+            self.db.set_display_mode(OWNER_ID1, "BAD_VALUE")
+        # Set display_mode to a bad value
+        sql = "UPDATE owners SET display_mode=? WHERE id=?"
+        self.db.cur.execute(sql, ["BAD_VALUE", OWNER_ID1])
+        with self.assertRaisesRegex(ValueError, r"^BAD_VALUE is not a valid display mode. Valid values are "
+                                                r"\['POST', 'EDIT', 'UPDATE'\]$"):
+            self.db.get_display_mode(OWNER_ID1)
+
     def test_add_task(self):
         rowid = self.db.add_task("Spoon Spain", OWNER_ID1)
         retrieved_rowid = self.db.filter_task_ids_by_name([rowid], "spain")

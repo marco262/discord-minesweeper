@@ -6,6 +6,13 @@ VERSION_NEEDED = 3
 TEST_MODE = False
 
 
+DISPLAY_MODES = [
+    "POST",   # Posts a new list every time a command is given (old behavior)
+    "EDIT",   # Edits the previous list posted, except when doing ~newlist or ~list
+    "UPDATE"  # Provides a single line update when a command is given. ~list is required to post full list
+]
+
+
 class Db:
 
     def __init__(self, filename="database_files/list-keeper.db", auto_commit=True):
@@ -57,6 +64,19 @@ class Db:
     def get_owner_id(self, name):
         sql = "SELECT id FROM owners WHERE name=?"
         return self.cur.execute(sql, [name]).fetchone()[0]
+
+    def get_display_mode(self, owner_id):
+        sql = "SELECT display_mode FROM owners WHERE id=?"
+        display_mode = self.cur.execute(sql, [owner_id]).fetchone()[0]
+        if display_mode not in DISPLAY_MODES:
+            raise ValueError(f"{display_mode} is not a valid display mode. Valid values are {DISPLAY_MODES}")
+        return display_mode
+
+    def set_display_mode(self, owner_id, display_mode):
+        if display_mode not in DISPLAY_MODES:
+            raise ValueError(f"{display_mode} is not a valid display mode. Valid values are {DISPLAY_MODES}")
+        sql = "UPDATE owners SET display_mode=? WHERE id=?"
+        self.cur.execute(sql, [display_mode, owner_id])
 
     def add_task(self, task_name, owner_id):
         sql = """
