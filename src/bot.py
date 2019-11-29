@@ -24,7 +24,7 @@ def load_commands(bot):
 
     @bot.event
     async def on_ready():
-        await bot.change_presence(activity=discord.Game("~help"))
+        await bot.change_presence(activity=discord.Game(PREFIX + "help"))
         print(f"{bot.user.name} has connected to Discord!")
 
     @bot.command(name='version')
