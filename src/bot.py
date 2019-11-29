@@ -6,7 +6,7 @@ from discord.ext.commands import Bot
 from src.list_bot.list_commands import ListCommands
 from src.minesweeper.minesweeper import new_game
 
-VERSION = (0, 0, 1)
+VERSION = (0, 9, 0)
 
 with open("conf/credentials.json") as f:
     json = loads(f.read())
