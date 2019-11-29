@@ -48,6 +48,8 @@ def load_commands(bot):
             print("Logging out...")
             await bot.change_presence(status=discord.Status.offline)
             await bot.logout()
+        else:
+            print("You're not my real dad! {}".format(context.author.id))
 
 
 def run_bot():

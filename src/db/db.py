@@ -2,6 +2,7 @@ import sqlite3
 from json import dumps, loads
 from typing import Iterable, List, Optional
 
+VERSION_NEEDED = 2
 TEST_MODE = False
 
 
@@ -271,6 +272,17 @@ class Db:
         """
         json_list = dumps(list_items)
         self.cur.execute(sql, [json_list, owner_id])
+
+
+def check_db_version():
+    with Db() as db_obj:
+        sql = "SELECT version FROM version;"
+        version = db_obj.cur.execute(sql).fetchone()[0]
+    if not version == VERSION_NEEDED:
+        raise ValueError(f"Incorrect DB version: {version} != {VERSION_NEEDED}")
+
+
+check_db_version()
 
 
 if __name__ == "__main__":
