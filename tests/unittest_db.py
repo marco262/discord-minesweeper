@@ -237,6 +237,20 @@ class TestDatabase(unittest.TestCase):
         retrieved_list = self.db.get_list_items(OWNER_ID1)
         self.assertEqual([7, 8, 9], retrieved_list)
 
+    def test_get_last_message_id(self):
+        self.db.new_list([1, 2, 3], OWNER_ID1)
+        channel_name1 = "channel_name1"
+        last_message_id1 = 1111111
+        channel_name2 = "channel_name2"
+        last_message_id2 = 2222222
+        self.assertIsNone(self.db.get_last_message_id(OWNER_ID1, channel_name1))
+        self.db.set_last_message_id(OWNER_ID1, channel_name1, last_message_id1)
+        self.assertEqual(last_message_id1, self.db.get_last_message_id(OWNER_ID1, channel_name1))
+        self.assertIsNone(self.db.get_last_message_id(OWNER_ID1, channel_name2))
+        self.db.set_last_message_id(OWNER_ID1, channel_name2, last_message_id2)
+        self.assertEqual(last_message_id1, self.db.get_last_message_id(OWNER_ID1, channel_name1))
+        self.assertEqual(last_message_id2, self.db.get_last_message_id(OWNER_ID1, channel_name2))
+
 
 if __name__ == "__main__":
     unittest.main()

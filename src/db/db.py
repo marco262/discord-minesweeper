@@ -300,6 +300,18 @@ class Db:
         json_list = dumps(list_items)
         self.cur.execute(sql, [json_list, owner_id])
 
+    def get_last_message_id(self, owner_id, channel):
+        sql = "SELECT last_messages FROM lists WHERE owner_id=?"
+        last_messages = loads(self.cur.execute(sql, [owner_id]).fetchone()[0])
+        return last_messages.get(channel)
+
+    def set_last_message_id(self, owner_id, channel, message_id):
+        sql = "SELECT last_messages FROM lists WHERE owner_id=?"
+        last_messages = loads(self.cur.execute(sql, [owner_id]).fetchone()[0])
+        last_messages[channel] = message_id
+        sql = "UPDATE lists SET last_messages=? WHERE owner_id=?"
+        self.cur.execute(sql, [dumps(last_messages), owner_id])
+
 
 if __name__ == "__main__":
     with Db(filename=r"..\..\database_files\list-keeper.db") as db:
