@@ -276,7 +276,7 @@ class Db:
         self.cur.execute(sql, [json_list, owner_id])
 
     def get_list(self, owner_id):
-        sql = "SELECT * FROM lists WHERE owner_id = ?"
+        sql = "SELECT items, owner_id, created_ts, updated_ts FROM lists WHERE owner_id = ?"
         response = list(self.cur.execute(sql, [owner_id]).fetchone())
         response[0] = loads(response[0])
         return response
