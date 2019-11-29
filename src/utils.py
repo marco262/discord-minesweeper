@@ -80,7 +80,7 @@ def get_display_mode(context: Context, db: Db, owner: Message.author, result: st
     display_mode = db.get_display_mode(owner.id)
     if display_mode == "POST":
         return list_output, None, None
-    last_message_id = db.get_last_message_id(owner.id, context.channel)
+    last_message_id = db.get_last_message_id(owner.id, context.channel.id)
     if last_message_id is None:
         return list_output, None, None
     if display_mode == "EDIT":

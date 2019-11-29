@@ -1,6 +1,7 @@
 from re import match
 
 from discord import Message
+from discord.ext.commands import Context
 
 from src.db.db import Db
 from src.utils import print_task_list, find_task_id_in_list, pretty_task_time, get_list_items, get_display_mode
@@ -158,3 +159,8 @@ def clear_checked_tasks(context, owner: Message.author, message):
                 unchecked_tasks.append(task_id)
         db.update_list_items(unchecked_tasks, owner.id)
         return f"{owner.name}'s list\n" + print_task_list(db, owner), None, None
+
+
+def set_last_message_id(context: Context, owner: Message.author, response_message: Message):
+    with Db() as db:
+        db.set_last_message_id(owner.id, context.channel.id, response_message.id)
