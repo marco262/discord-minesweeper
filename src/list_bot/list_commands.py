@@ -17,7 +17,7 @@ class ListCommands(Cog):
         # Get everything after the command
         message = context.message.content[len(cmd):].strip()
         try:
-            output = func(context, context.author.id, context.author.name, message)
+            output, edit, message_id = func(context, context.author, message)
         except Exception as e:
             print(ctime())
             traceback.print_exc()
