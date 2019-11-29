@@ -2,7 +2,7 @@ import sqlite3
 from json import dumps, loads
 from typing import Iterable, List, Optional
 
-VERSION_NEEDED = 2
+VERSION_NEEDED = 3
 TEST_MODE = False
 
 
@@ -11,6 +11,7 @@ class Db:
     def __init__(self, filename="database_files/list-keeper.db", auto_commit=True):
         self.conn = sqlite3.connect(filename)
         self.cur = self.conn.cursor()
+        self.check_version()
         self.auto_commit = auto_commit
 
     def __enter__(self):
@@ -25,6 +26,12 @@ class Db:
                     self.conn.commit()
             finally:
                 self.conn.close()
+
+    def check_version(self):
+        sql = "SELECT version FROM version;"
+        version = self.cur.execute(sql).fetchone()[0]
+        if not version == VERSION_NEEDED:
+            raise ValueError(f"Incorrect DB version: {version} != {VERSION_NEEDED}")
 
     def wipe_owner_data(self, owner_id):
         sql = f"""
@@ -277,12 +284,3 @@ class Db:
 if __name__ == "__main__":
     with Db(filename=r"..\..\database_files\list-keeper.db") as db:
         db.print_tables()
-else:
-    def check_db_version():
-        with Db() as db_obj:
-            sql = "SELECT version FROM version;"
-            version = db_obj.cur.execute(sql).fetchone()[0]
-        if not version == VERSION_NEEDED:
-            raise ValueError(f"Incorrect DB version: {version} != {VERSION_NEEDED}")
-
-    check_db_version()
