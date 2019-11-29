@@ -1,4 +1,5 @@
 import traceback
+from time import ctime
 
 from discord.ext.commands import Context, Cog, command
 
@@ -18,8 +19,10 @@ class ListCommands(Cog):
         try:
             output = func(context, context.author.id, context.author.name, message)
         except Exception as e:
+            print(ctime())
             traceback.print_exc()
-            output = e.args
+            output = e.args[0]
+            print()
         await context.send(output)
 
     @command(name='newlist', help="Create a new list")
